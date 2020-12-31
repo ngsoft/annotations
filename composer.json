@@ -17,6 +17,7 @@
     },
     "require": {
         "php": "^7.4",
+        "ext-tokenizer": "*",
         "symfony/polyfill-mbstring": "^1.20"
     },
     "config": {
@@ -24,7 +25,7 @@
     },
     "autoload": {
         "psr-4": {
-            "NGSOFT\\": "src/"
+            "NGSOFT\\": "src/Interfaces/"
         },
         "files": []
     },

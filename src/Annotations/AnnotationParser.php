@@ -18,8 +18,9 @@ use function mb_strlen,
 
 class AnnotationParser {
 
-    const IGNORE_TAGS = [
-        'inheritdoc'
+    const VERSION = '1.0';
+    const DEFAULT_IGNORE_TAGS = [
+        'inheritdoc', 'phan'
     ];
 
     /** @var AnnotationFactoryInterface */
@@ -28,11 +29,14 @@ class AnnotationParser {
     /** @var AnnotationProcessorDispatcher */
     private $processorDispatcher;
 
+    /** @var string[] */
+    private $ignoreTags = [];
+
     public function __construct(
             ?AnnotationProcessorDispatcher $processorDispatcher = null,
             ?AnnotationFactoryInterface $annotationFactory = null
     ) {
-
+        $this->ignoreTags = self::DEFAULT_IGNORE_TAGS;
         if ($annotationFactory instanceof AnnotationFactoryInterface) $this->annotationFactory = $annotationFactory;
         $this->annotationFactory = new AnnotationFactory();
         if ($processorDispatcher instanceof AnnotationProcessorDispatcher) $this->processorDispatcher = $processorDispatcher;
@@ -40,15 +44,27 @@ class AnnotationParser {
     }
 
     /**
+     * Blacklist one to many tags
+     * @param string ...$tags
+     * @return self
+     */
+    public function ignoreTags(string ...$tags): self {
+        $this->ignoreTags = array_merge($this->ignoreTags, $tags);
+        return $this;
+    }
+
+    /**
      * Parse a doc block and returns parsed values
      * @param string $docComment
+     * @param string[] $tags Tags to find (empty tags will returns all)
      * @return array<string,string[]>
      */
-    public function parseAnnotation(string $docComment): array {
+    public function parseAnnotation(string $docComment, array $tags = []): array {
+
+        $whitelist = !empty($tags);
+
         $result = [];
-
         $lines = explode("\n", $docComment);
-
         foreach ($lines as $line) {
             $line = trim($line);
             $line = trim($line, '/*');
@@ -59,12 +75,12 @@ class AnnotationParser {
                 $line = mb_substr($line, $pos);
                 if (preg_match('/^@(\w[\w-]+)\h?+/', $line, $matches) > 0) {
                     $tag = $matches[1];
-                    if (in_array($tag, self::IGNORE_TAGS)) continue;
+                    if (!$whitelist and in_array($tag, $this->ignoreTags)) continue;
+                    if ($whitelist and!in_array($tag, $tags)) continue;
                     $len = mb_strlen($tag) + 1;
                     $line = mb_substr($line, $len);
                     $line = trim($line);
                     if (!isset($result[$tag])) $result[$tag] = [];
-
                     $result[$tag][] = $line;
                 }
             }
@@ -79,6 +95,7 @@ class AnnotationParser {
      * @return AnnotationInterface[]
      */
     public function parseClass(ReflectionClass $reflector, bool $classParents = false): array {
+
 
         $collection = [];
 
@@ -158,7 +175,7 @@ class AnnotationParser {
      * @return array
      * @suppress PhanPossiblyInfiniteLoop
      */
-    private function getClassParents(\ReflectionClass $reflector): array {
+    public function getClassParents(\ReflectionClass $reflector): array {
         $result = [];
         try {
             do {
