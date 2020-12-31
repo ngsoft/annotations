@@ -1,0 +1,30 @@
+{
+    "name": "ngsoft/annotations",
+    "description": "PHP Class Annotation Parser .",
+    "keywords": ["annotations", "docblock", "parser"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Aymeric Anger",
+            "role": "Developer",
+            "homepage": "https://github.com/ngsoft"
+        }
+    ],
+
+    "require-dev": {},
+    "require": {
+        "php": "^7.4",
+        "symfony/polyfill-mbstring": "^1.20"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "NGSOFT\\": "src/"
+        },
+        "files": []
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
