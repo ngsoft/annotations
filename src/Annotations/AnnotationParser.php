@@ -63,7 +63,15 @@ class AnnotationParser implements AnnotationParserInterface {
     }
 
     public function parseMethod(ReflectionMethod $reflector): AnnotationCollectionInterface {
-
+        if (($docComment = $reflector->getDocComment()) !== false) {
+            $parsed = $this->parseAnnotation($docComment);
+            if (count($parsed) > 0) {
+                foreach ($this->processorStack as $processor) {
+                    
+                }
+            }
+        }
+        return $this->annotationFactory->createAnnotationCollection();
     }
 
     public function parseProperty(ReflectionProperty $reflector): AnnotationCollectionInterface {

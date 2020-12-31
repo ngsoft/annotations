@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace NGSOFT\Interfaces;
 
-use InvalidArgumentException;
-
 interface AnnotationProcessorDispatcher {
 
     /**
