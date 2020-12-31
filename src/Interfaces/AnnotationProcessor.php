@@ -7,10 +7,11 @@ namespace NGSOFT\Interfaces;
 interface AnnotationProcessor {
 
     /**
-     * Filter Annotation Value
+     * Process Annotation Value
      * @param Annotation $annotation
      * @param AnnotationHandler $handler
-     * @return Annotation
+     * @param AnnotationFactoryInterface $factory
+     * @return AnnotationCollection
      */
-    public function process(Annotation $annotation, AnnotationHandler $handler): Annotation;
+    public function process(Annotation $annotation, AnnotationHandler $handler, AnnotationFactoryInterface $factory): AnnotationCollection;
 }

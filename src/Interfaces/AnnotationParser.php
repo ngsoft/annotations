@@ -15,40 +15,40 @@ interface AnnotationParser {
     /**
      * Parse Annotation Block
      * @param string $docComment
-     * @return array<string,mixed> key/values pair
+     * @return AnnotationCollection
      */
-    public function parseAnnotation(string $docComment): array;
+    public function parseAnnotation(string $docComment): AnnotationCollection;
 
     /**
      * Parse Class Annotations using Class Name
      * @param string $className
-     * @return Annotation[]
+     * @return AnnotationCollection
      * @throws AnnotationParserException On Error
      * @throws InvalidArgumentException on invalid Class Name
      */
-    public function parseClassName(string $className): array;
+    public function parseClassName(string $className): AnnotationCollection;
 
     /**
      * Parse Class Annotations
      * @param ReflectionClass $reflector
-     * @return array
+     * @return AnnotationCollection
      * @throws AnnotationParserException On Error
      */
-    public function parseClass(ReflectionClass $reflector): array;
+    public function parseClass(ReflectionClass $reflector): AnnotationCollection;
 
     /**
      * Parse Class Method Annotations
      * @param ReflectionMethod $reflector
-     * @return array
+     * @return AnnotationCollection
      * @throws AnnotationParserException On Error
      */
-    public function parseMethod(ReflectionMethod $reflector): array;
+    public function parseMethod(ReflectionMethod $reflector): AnnotationCollection;
 
     /**
      * Parse Class Property Annotations
      * @param ReflectionProperty $reflector
-     * @return array
+     * @return AnnotationCollection
      * @throws AnnotationParserException On Error
      */
-    public function parseProperty(ReflectionProperty $reflector): array;
+    public function parseProperty(ReflectionProperty $reflector): AnnotationCollection;
 }
