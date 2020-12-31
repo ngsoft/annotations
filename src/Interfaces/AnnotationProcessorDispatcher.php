@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NGSOFT\Interfaces;
 
-interface AnnotationProcessorDispatcher {
+interface AnnotationProcessorDispatcher extends AnnotationHandler {
 
     /**
      * Add a processor to the stack

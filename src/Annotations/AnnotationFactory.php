@@ -15,11 +15,10 @@ use ReflectionClass,
 class AnnotationFactory implements AnnotationFactoryInterface {
 
     /** {@inheritdoc} */
-    public function createAnnotation($reflector, string $tag): AnnotationInterface {
-
-        if ($reflector instanceof ReflectionClass) return new ClassAnnotation($reflector, $tag);
-        elseif ($reflector instanceof ReflectionProperty) return new PropertyAnnotation($reflector, $tag);
-        elseif ($reflector instanceof ReflectionMethod) return new MethodAnnotation($reflector, $tag);
+    public function createAnnotation($reflector, string $tag, $value = null): AnnotationInterface {
+        if ($reflector instanceof ReflectionClass) return new ClassAnnotation($reflector, $tag, $value);
+        elseif ($reflector instanceof ReflectionProperty) return new PropertyAnnotation($reflector, $tag, $value);
+        elseif ($reflector instanceof ReflectionMethod) return new MethodAnnotation($reflector, $tag, $value);
         throw new InvalidArgumentException(sprintf('Invalid Reflector Class %s', get_class($reflector)));
     }
 

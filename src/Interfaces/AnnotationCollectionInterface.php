@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace NGSOFT\Interfaces;
 
-use Traversable;
+use Countable,
+    Traversable;
 
-interface AnnotationCollectionInterface extends Traversable {
+interface AnnotationCollectionInterface extends Traversable, Countable {
 
     /**
      * Adds one or many Annotations

@@ -35,4 +35,9 @@ class AnnotationCollection implements AnnotationCollectionInterface, IteratorAgg
         return new ArrayIterator($this->getAnnotations());
     }
 
+    /** {@inheritdoc} */
+    public function count() {
+        return count($this->annotations);
+    }
+
 }

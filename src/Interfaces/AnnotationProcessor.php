@@ -13,5 +13,5 @@ interface AnnotationProcessor {
      * @param AnnotationFactoryInterface $factory
      * @return AnnotationCollectionInterface
      */
-    public function process(AnnotationInterface $annotation, AnnotationHandler $handler, AnnotationFactoryInterface $factory): AnnotationCollectionInterface;
+    public function process(AnnotationInterface $annotation, AnnotationHandler $handler): AnnotationInterface;
 }

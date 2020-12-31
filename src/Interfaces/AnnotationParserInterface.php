@@ -15,7 +15,7 @@ interface AnnotationParserInterface {
     /**
      * Parse Annotation Block without filtering
      * @param string $docComment
-     * @return array<string,string>
+     * @return array<string,string[]>
      */
     public function parseAnnotation(string $docComment): array;
 
