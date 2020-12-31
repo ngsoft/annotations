@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations;
 
 use NGSOFT\{
-    Annotations\Utils\NullHandler, Interfaces\AnnotationHandler, Interfaces\AnnotationInterface, Interfaces\AnnotationProcessor,
-    Interfaces\AnnotationProcessorDispatcher
+    Annotations\Utils\NullHandler, Annotations\Utils\ProcessorHandler, Interfaces\AnnotationHandler, Interfaces\AnnotationInterface,
+    Interfaces\AnnotationProcessor
 };
+use RuntimeException;
 
 class AnnotationProcessorDispatcher {
 
@@ -45,7 +46,7 @@ class AnnotationProcessorDispatcher {
     /** {@inheritdoc} */
     public function addProcessor(AnnotationProcessor $processor): AnnotationProcessorDispatcher {
         $next = $this->stack;
-        $this->stack = new Utils\ProcessorHandler($processor, $next);
+        $this->stack = new ProcessorHandler($processor, $next);
 
         return $this;
     }

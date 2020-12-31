@@ -78,22 +78,32 @@ class AnnotationParser {
      */
     public function parseClass(ReflectionClass $reflector, bool $classParents = false): array {
         $className = $reflector->getName();
-        $collection = $this->singleDocCommentParser($reflector);
+        if ($classParents) {
+            $classes = $this->getClassParents($reflector);
+        } else $classes = [$reflector];
+
+        $collection = [];
+
+        foreach ($classes as $classReflector) {
+            $collection = array_merge($collection, $this->singleDocCommentParser($reflector));
+        }
+
+
+
+
         foreach ($reflector->getProperties() as $propReflector) {
             if (
                     !$classParents
                     and $propReflector->class !== $className
             ) continue;
-            $tmp = $this->parseProperty($propReflector);
-            if (count($tmp) > 0) $collection->addAnnotation(...$tmp->getAnnotations());
+            $collection = array_merge($collection, $this->parseProperty($propReflector));
         }
         foreach ($reflector->getMethods() as $methodReflector) {
             if (
                     !$classParents
                     and $propReflector->class !== $className
             ) continue;
-            $tmp = $this->parseMethod($methodReflector);
-            if (count($tmp) > 0) $collection->addAnnotation(...$tmp->getAnnotations());
+            $collection = array_merge($collection, $this->parseMethod($methodReflector));
         }
         return $collection;
     }
@@ -135,8 +145,8 @@ class AnnotationParser {
      * @param Reflector $reflector Must implements getDocComment method
      * @return AnnotationInterface[]
      */
-    public function singleDocCommentParser(Reflector $reflector): AnnotationCollectionInterface {
-        $collection = $this->annotationFactory->createAnnotationCollection();
+    private function singleDocCommentParser(Reflector $reflector): array {
+        $collection = [];
         if (method_exists($reflector, 'getDocComment')) {
             if (($docComment = $reflector->getDocComment()) !== false) {
                 $parsed = $this->parseAnnotation($docComment);
@@ -145,7 +155,7 @@ class AnnotationParser {
                     foreach ($parsed as $tag => $array) {
                         foreach ($array as $value) {
                             $annotation = $this->processorDispatcher->handle($this->annotationFactory->createAnnotation($reflector, $tag, $value));
-                            $collection->addAnnotation($annotation);
+                            $collection[] = $annotation;
                         }
                     }
                 }
@@ -153,6 +163,21 @@ class AnnotationParser {
         }
 
         return $collection;
+    }
+
+    /**
+     * Get Extended Classes
+     * @param ReflectionClass $reflector
+     * @return array
+     */
+    private function getClassParents(\ReflectionClass $reflector): array {
+        $result = [];
+        try {
+            do {
+                $result[] = $reflector;
+            } while (($reflector = $reflector->getParentClass()) !== false);
+        } catch (\ReflectionException $error) { $error->getCode(); }
+        return $result;
     }
 
 }
