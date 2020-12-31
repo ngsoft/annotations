@@ -11,8 +11,7 @@ use NGSOFT\Interfaces\{
 use ReflectionClass,
     ReflectionException,
     ReflectionMethod,
-    ReflectionProperty,
-    Reflector;
+    ReflectionProperty;
 use function mb_strlen,
              mb_strpos,
              mb_substr;
@@ -80,30 +79,18 @@ class AnnotationParser {
      * @return AnnotationInterface[]
      */
     public function parseClass(ReflectionClass $reflector, bool $classParents = false): array {
-        $className = $reflector->getName();
-        if ($classParents) {
-            $classes = $this->getClassParents($reflector);
-        } else $classes = [$reflector];
 
         $collection = [];
 
-        foreach ($classes as $classReflector) {
-            $collection = array_merge($collection, $this->singleDocCommentParser($classReflector));
-        }
-
-        foreach ($reflector->getProperties() as $propReflector) {
-            if (
-                    !$classParents
-                    and $propReflector->class !== $className
-            ) continue;
-            $collection = array_merge($collection, $this->parseProperty($propReflector));
-        }
-        foreach ($reflector->getMethods() as $methodReflector) {
-            if (
-                    !$classParents
-                    and $propReflector->class !== $className
-            ) continue;
-            $collection = array_merge($collection, $this->parseMethod($methodReflector));
+        $className = $reflector->getName();
+        if ($classParents) {
+            $reflectors = $this->getClassParents($reflector);
+        } else $reflectors = [$reflector];
+        $others = array_merge($reflector->getProperties(), $reflector->getMethods());
+        if (!$classParents) $others = array_filter($others, fn($r) => $r->class === $className);
+        $reflectors = array_merge($reflectors, $others);
+        foreach ($reflectors as $r) {
+            $collection = array_merge($collection, $this->singleDocCommentParser($r));
         }
         return $this->process($collection);
     }
@@ -142,10 +129,10 @@ class AnnotationParser {
 
     /**
      * Parse Using Reflector
-     * @param Reflector $reflector Must implements getDocComment method
+     * @param ReflectionClass|ReflectionProperty|ReflectionMethod $reflector Must implements getDocComment method
      * @return AnnotationInterface[]
      */
-    private function singleDocCommentParser(Reflector $reflector): array {
+    private function singleDocCommentParser($reflector): array {
         $collection = [];
         if (method_exists($reflector, 'getDocComment')) {
             if (($docComment = $reflector->getDocComment()) !== false) {
@@ -169,6 +156,7 @@ class AnnotationParser {
      * Get Extended Classes
      * @param ReflectionClass $reflector
      * @return array
+     * @suppress PhanPossiblyInfiniteLoop
      */
     private function getClassParents(\ReflectionClass $reflector): array {
         $result = [];
@@ -180,13 +168,6 @@ class AnnotationParser {
         return $result;
     }
 
-    /** @param AnnotationInterface[] $annotations */
-    private function loopThough(array $annotations) {
-        foreach ($annotations as $annotation) {
-            yield $annotation;
-        }
-    }
-
     /**
      * Process Annotations
      * @param AnnotationInterface[] $annotations
@@ -194,7 +175,7 @@ class AnnotationParser {
      */
     private function process(array $annotations): array {
         $result = [];
-        foreach ($this->loopThough($annotations) as $annotation) {
+        foreach ($annotations as $annotation) {
             $result[] = $this->processorDispatcher->handle($annotation);
         }
         return $result;

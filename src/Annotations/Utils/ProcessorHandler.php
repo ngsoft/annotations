@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Utils;
 
 use NGSOFT\Interfaces\{
-    AnnotationHandler, AnnotationInterface, AnnotationProcessor
+    AnnotationHandlerInterface, AnnotationInterface, AnnotationProcessorInterface
 };
 
-class ProcessorHandler implements AnnotationHandler {
+class ProcessorHandler implements AnnotationHandlerInterface {
 
-    /** @var AnnotationProcessor */
+    /** @var AnnotationProcessorInterface */
     private $processor;
 
-    /** @var AnnotationHandler */
+    /** @var AnnotationHandlerInterface */
     private $next;
 
-    public function __construct(AnnotationProcessor $processor, AnnotationHandler $next) {
+    public function __construct(AnnotationProcessorInterface $processor, AnnotationHandlerInterface $next) {
         $this->processor = $processor;
         $this->next = $next;
     }

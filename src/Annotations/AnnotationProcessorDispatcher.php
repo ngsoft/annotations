@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations;
 
 use NGSOFT\{
-    Annotations\Utils\NullHandler, Annotations\Utils\ProcessorHandler, Interfaces\AnnotationHandler, Interfaces\AnnotationInterface,
-    Interfaces\AnnotationProcessor
+    Annotations\Utils\NullHandler, Annotations\Utils\ProcessorHandler, Interfaces\AnnotationHandlerInterface,
+    Interfaces\AnnotationInterface, Interfaces\AnnotationProcessorInterface
 };
 use RuntimeException;
 
@@ -14,11 +14,11 @@ class AnnotationProcessorDispatcher {
 
     const DEFAULT_PROCESSORS = [];
 
-    /** @var AnnotationHandler */
+    /** @var AnnotationHandlerInterface */
     private $stack;
 
     /**
-     * @param AnnotationProcessor[]|null $processors
+     * @param AnnotationProcessorInterface[]|null $processors
      * @throws RuntimeException
      */
     public function __construct(
@@ -28,7 +28,7 @@ class AnnotationProcessorDispatcher {
         if (!is_array($processors)) $processors = array_map(fn($classname) => new $classname(), self::DEFAULT_PROCESSORS);
         foreach ($processors as $processor) {
             if (
-                    !($processor instanceof AnnotationProcessor)
+                    !($processor instanceof AnnotationProcessorInterface)
             ) throw new RuntimeException('Invalid AnnotationProcessor.');
             $this->addProcessor($processor);
         }
@@ -44,7 +44,7 @@ class AnnotationProcessorDispatcher {
     }
 
     /** {@inheritdoc} */
-    public function addProcessor(AnnotationProcessor $processor): AnnotationProcessorDispatcher {
+    public function addProcessor(AnnotationProcessorInterface $processor): AnnotationProcessorDispatcher {
         $next = $this->stack;
         $this->stack = new ProcessorHandler($processor, $next);
 

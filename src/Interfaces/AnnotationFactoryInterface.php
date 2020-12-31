@@ -20,11 +20,4 @@ interface AnnotationFactoryInterface {
      * @throws InvalidArgumentException if invalid processor
      */
     public function createAnnotation($reflector, string $tag, $value = null): AnnotationInterface;
-
-    /**
-     * Creates a new Annotation Collection
-     * @param AnnotationInterface ...$annotations
-     * @return AnnotationCollectionInterface
-     */
-    public function createAnnotationCollection(AnnotationInterface ...$annotations): AnnotationCollectionInterface;
 }

@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Processors;
 
 use NGSOFT\Interfaces\{
-    AnnotationHandler, AnnotationInterface, AnnotationProcessor
+    AnnotationHandlerInterface, AnnotationInterface, AnnotationProcessorInterface
 };
 
-class ArrayDetectorProcessor implements AnnotationProcessor {
+class ArrayDetectorProcessor implements AnnotationProcessorInterface {
 
-    public function process(AnnotationInterface $annotation, AnnotationHandler $handler): AnnotationInterface {
-
+    public function process(AnnotationInterface $annotation, AnnotationHandlerInterface $handler): AnnotationInterface {
+        return $handler->handle($annotation);
     }
 
 }
