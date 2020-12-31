@@ -9,16 +9,35 @@ use NGSOFT\{
     Interfaces\AnnotationProcessorDispatcher
 };
 
-class Dispatcher implements AnnotationProcessorDispatcher {
+class AnnotationProcessorDispatcher {
+
+    const DEFAULT_PROCESSORS = [];
 
     /** @var AnnotationHandler */
     private $stack;
 
-    public function __construct() {
+    /**
+     * @param AnnotationProcessor[]|null $processors
+     * @throws RuntimeException
+     */
+    public function __construct(
+            ?array $processors = null
+    ) {
         $this->stack = new NullHandler();
+        if (!is_array($processors)) $processors = self::DEFAULT_PROCESSORS;
+        foreach ($processors as $processor) {
+
+            if (
+                    !($processor instanceof AnnotationProcessor)
+            ) throw new RuntimeException('Invalid AnnotationProcessor.');
+        }
     }
 
-    /** {@inheritdoc} */
+    /**
+     * Handles Single Annotation Processing
+     * @param AnnotationInterface $annotation
+     * @return AnnotationInterface
+     */
     public function handle(AnnotationInterface $annotation): AnnotationInterface {
         return $this->stack->handle($annotation);
     }

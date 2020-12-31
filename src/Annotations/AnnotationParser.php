@@ -4,15 +4,19 @@ declare(strict_types=1);
 
 namespace NGSOFT\Annotations;
 
+use InvalidArgumentException;
 use NGSOFT\Interfaces\{
-    AnnotationCollectionInterface, AnnotationFactoryInterface, AnnotationParserInterface, AnnotationProcessorDispatcher,
-    AnnotationProcessorStack
+    AnnotationCollectionInterface, AnnotationFactoryInterface
 };
 use ReflectionClass,
     ReflectionMethod,
-    ReflectionProperty;
+    ReflectionProperty,
+    Reflector;
+use function mb_strlen,
+             mb_strpos,
+             mb_substr;
 
-class AnnotationParser implements AnnotationParserInterface {
+class AnnotationParser {
 
     const IGNORE_TAGS = [
         'inheritdoc'
@@ -21,28 +25,23 @@ class AnnotationParser implements AnnotationParserInterface {
     /** @var AnnotationFactoryInterface */
     private $annotationFactory;
 
-    /** @var AnnotationProcessorStack */
-    private $processorStack;
-
     /** @var AnnotationProcessorDispatcher */
     private $processorDispatcher;
 
     public function __construct(
-            ?AnnotationProcessorStack $processorStack = null
+            ?AnnotationProcessorDispatcher $processorDispatcher = null
     ) {
-        if (!($processorStack instanceof AnnotationProcessorStack)) {
-            $processorStack = new ProcessorStack();
-        }
-        $this->processorStack = $processorStack;
-        $this->annotationFactory = new AnnotationFactory();
-        $this->processorDispatcher = new Dispatcher();
 
-        foreach ($this->processorStack as $processor) {
-            $this->processorDispatcher->addProcessor($processor);
-        }
+        $this->annotationFactory = new AnnotationFactory();
+        if ($processorDispatcher instanceof AnnotationProcessorDispatcher) $this->processorDispatcher = $processorDispatcher;
+        else $this->processorDispatcher = new AnnotationProcessorDispatcher();
     }
 
-    /** {@inheritdoc} */
+    /**
+     * Parse a doc block and returns parsed values
+     * @param string $docComment
+     * @return array<string,string[]>
+     */
     public function parseAnnotation(string $docComment): array {
         $result = [];
 
@@ -68,71 +67,91 @@ class AnnotationParser implements AnnotationParserInterface {
                 }
             }
         }
-
-
-
-
-
-
-        var_dump($result);
-
-
-
         return $result;
     }
 
-    /** {@inheritdoc} */
-    public function parseClass(ReflectionClass $reflector): AnnotationCollectionInterface {
-
-        //first class Doc Comment
+    /**
+     * Parse a Class
+     * @param ReflectionClass $reflector
+     * @param bool $classParents adds parents to results
+     * @return AnnotationInterface[]
+     */
+    public function parseClass(ReflectionClass $reflector, bool $classParents = false): array {
+        $className = $reflector->getName();
         $collection = $this->singleDocCommentParser($reflector);
-
         foreach ($reflector->getProperties() as $propReflector) {
+            if (
+                    !$classParents
+                    and $propReflector->class !== $className
+            ) continue;
             $tmp = $this->parseProperty($propReflector);
             if (count($tmp) > 0) $collection->addAnnotation(...$tmp->getAnnotations());
         }
         foreach ($reflector->getMethods() as $methodReflector) {
+            if (
+                    !$classParents
+                    and $propReflector->class !== $className
+            ) continue;
             $tmp = $this->parseMethod($methodReflector);
             if (count($tmp) > 0) $collection->addAnnotation(...$tmp->getAnnotations());
         }
         return $collection;
     }
 
-    /** {@inheritdoc} */
-    public function parseClassName(string $className): AnnotationCollectionInterface {
-
+    /**
+     * Parse a class using its class name
+     * @param string $className
+     * @param bool $classParents adds parents to results
+     * @return AnnotationInterface[]
+     * @throws InvalidArgumentException
+     */
+    public function parseClassName(string $className, bool $classParents = false): array {
         if (!class_exists($className)and!interface_exists($className)) {
-            throw new \InvalidArgumentException(sprintf('Invalid Class %s', $className));
+            throw new InvalidArgumentException(sprintf('Invalid Class %s', $className));
         }
-
-        return $this->parseClass(new \ReflectionClass($className));
+        return $this->parseClass(new \ReflectionClass($className), $classParents);
     }
 
-    /** {@inheritdoc} */
-    public function parseMethod(ReflectionMethod $reflector): AnnotationCollectionInterface {
-        return $this->singleDocCommentParser($reflector);
-    }
-
-    /** {@inheritdoc} */
-    public function parseProperty(ReflectionProperty $reflector): AnnotationCollectionInterface {
+    /**
+     * Parse a class method
+     * @param ReflectionMethod $reflector
+     * @return MethodAnnotation[]
+     */
+    public function parseMethod(ReflectionMethod $reflector): array {
         return $this->singleDocCommentParser($reflector);
     }
 
     /**
-     * @param ReflectionProperty|ReflectionMethod|ReflectionClass $reflector
-     * @return AnnotationCollectionInterface
+     * Parse a class Property
+     * @param ReflectionProperty $reflector
+     * @return PropertyAnnotation[]
      */
-    private function singleDocCommentParser($reflector): AnnotationCollectionInterface {
+    public function parseProperty(ReflectionProperty $reflector): array {
+        return $this->singleDocCommentParser($reflector);
+    }
+
+    /**
+     * Parse Using Reflector
+     * @param Reflector $reflector Must implements getDocComment method
+     * @return AnnotationInterface[]
+     */
+    public function singleDocCommentParser(Reflector $reflector): AnnotationCollectionInterface {
         $collection = $this->annotationFactory->createAnnotationCollection();
-        if (($docComment = $reflector->getDocComment()) !== false) {
-            $parsed = $this->parseAnnotation($docComment);
-            if (count($parsed) > 0) {
-                foreach ($parsed as $tag => $value) {
-                    $annotation = $this->processorDispatcher->handle($this->annotationFactory->createAnnotation($reflector, $tag, $value));
-                    $collection->addAnnotation($annotation);
+        if (method_exists($reflector, 'getDocComment')) {
+            if (($docComment = $reflector->getDocComment()) !== false) {
+                $parsed = $this->parseAnnotation($docComment);
+                if (count($parsed) > 0) {
+                    /** @var string[] $array */
+                    foreach ($parsed as $tag => $array) {
+                        foreach ($array as $value) {
+                            $annotation = $this->processorDispatcher->handle($this->annotationFactory->createAnnotation($reflector, $tag, $value));
+                            $collection->addAnnotation($annotation);
+                        }
+                    }
                 }
             }
         }
+
         return $collection;
     }
 
