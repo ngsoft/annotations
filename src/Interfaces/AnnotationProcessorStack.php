@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace NGSOFT\Interfaces;
 
-use Iterator;
+use Traversable;
 
-interface AnnotationProcessorStack extends Iterator {
+interface AnnotationProcessorStack extends Traversable {
 
     /**
      * Adds Multiple processors to the stack

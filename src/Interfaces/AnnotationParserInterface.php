@@ -10,14 +10,14 @@ use InvalidArgumentException,
     ReflectionMethod,
     ReflectionProperty;
 
-interface AnnotationParser {
+interface AnnotationParserInterface {
 
     /**
-     * Parse Annotation Block
+     * Parse Annotation Block without filtering
      * @param string $docComment
-     * @return AnnotationCollectionInterface
+     * @return array<string,string>
      */
-    public function parseAnnotation(string $docComment): AnnotationCollectionInterface;
+    public function parseAnnotation(string $docComment): array;
 
     /**
      * Parse Class Annotations using Class Name
