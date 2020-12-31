@@ -58,6 +58,7 @@ class AnnotationParser implements AnnotationParserInterface {
                 $line = mb_substr($line, $pos);
                 if (preg_match('/^@(\w[\w-]+)\h?+/', $line, $matches) > 0) {
                     $tag = $matches[1];
+                    if (in_array($tag, self::IGNORE_TAGS)) continue;
                     $len = mb_strlen($tag) + 1;
                     $line = mb_substr($line, $len);
                     $line = trim($line);
