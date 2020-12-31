@@ -105,7 +105,7 @@ class AnnotationParser {
             ) continue;
             $collection = array_merge($collection, $this->parseMethod($methodReflector));
         }
-        return $collection;
+        return $this->process($collection);
     }
 
     /**
@@ -119,25 +119,25 @@ class AnnotationParser {
         if (!class_exists($className)and!interface_exists($className)) {
             throw new InvalidArgumentException(sprintf('Invalid Class %s', $className));
         }
-        return $this->parseClass(new \ReflectionClass($className), $classParents);
+        return $this->parseClass(new ReflectionClass($className), $classParents);
     }
 
     /**
      * Parse a class method
      * @param ReflectionMethod $reflector
-     * @return MethodAnnotation[]
+     * @return AnnotationInterface[]
      */
     public function parseMethod(ReflectionMethod $reflector): array {
-        return $this->singleDocCommentParser($reflector);
+        return $this->process($this->singleDocCommentParser($reflector));
     }
 
     /**
      * Parse a class Property
      * @param ReflectionProperty $reflector
-     * @return PropertyAnnotation[]
+     * @return AnnotationInterface[]
      */
     public function parseProperty(ReflectionProperty $reflector): array {
-        return $this->singleDocCommentParser($reflector);
+        return $this->process($this->singleDocCommentParser($reflector));
     }
 
     /**
@@ -177,6 +177,26 @@ class AnnotationParser {
                 $result[] = $reflector;
             } while (($reflector = $reflector->getParentClass()) !== false);
         } catch (ReflectionException $error) { $error->getCode(); }
+        return $result;
+    }
+
+    /** @param AnnotationInterface[] $annotations */
+    private function loopThough(array $annotations) {
+        foreach ($annotations as $annotation) {
+            yield $annotation;
+        }
+    }
+
+    /**
+     * Process Annotations
+     * @param AnnotationInterface[] $annotations
+     * @return AnnotationInterface[]
+     */
+    private function process(array $annotations): array {
+        $result = [];
+        foreach ($this->loopThough($annotations) as $annotation) {
+            $result[] = $this->processorDispatcher->handle($annotation);
+        }
         return $result;
     }
 

@@ -25,12 +25,12 @@ class AnnotationProcessorDispatcher {
             ?array $processors = null
     ) {
         $this->stack = new NullHandler();
-        if (!is_array($processors)) $processors = self::DEFAULT_PROCESSORS;
+        if (!is_array($processors)) $processors = array_map(fn($classname) => new $classname(), self::DEFAULT_PROCESSORS);
         foreach ($processors as $processor) {
-
             if (
                     !($processor instanceof AnnotationProcessor)
             ) throw new RuntimeException('Invalid AnnotationProcessor.');
+            $this->addProcessor($processor);
         }
     }
 
