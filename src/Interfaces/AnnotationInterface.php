@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NGSOFT\Interfaces;
 
 use ReflectionClass,
     ReflectionMethod,
     ReflectionProperty;
 
-interface Annotation {
+interface AnnotationInterface {
 
     const ANNOTATION_TYPE_CLASS = "CLASS";
     const ANNOTATION_TYPE_PROPERTY = "PROPERTY";
@@ -51,7 +53,7 @@ interface Annotation {
     /**
      * Returns a new instance with specified value
      * @param mixed $value
-     * @return Annotation
+     * @return AnnotationInterface
      */
-    public function withValue($value): Annotation;
+    public function withValue($value): AnnotationInterface;
 }

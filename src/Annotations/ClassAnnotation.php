@@ -27,7 +27,7 @@ class ClassAnnotation extends AnnotationAbstract {
      * @param string $tag
      * @param mixed $value
      */
-    public function __construct(ReflectionClass $reflector, string $tag, $value) {
+    public function __construct(ReflectionClass $reflector, string $tag, $value = null) {
         $this->reflector = $reflector;
         parent::__construct($tag, $value);
     }

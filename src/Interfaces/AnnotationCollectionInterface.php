@@ -6,18 +6,18 @@ namespace NGSOFT\Interfaces;
 
 use Traversable;
 
-interface AnnotationCollection extends Traversable {
+interface AnnotationCollectionInterface extends Traversable {
 
     /**
      * Adds one or many Annotations
-     * @param Annotation $annotations
+     * @param AnnotationInterface $annotations
      * @return self
      */
-    public function addAnnotation(Annotation ...$annotations): self;
+    public function addAnnotation(AnnotationInterface ...$annotations): self;
 
     /**
      * Get Annotation List
-     * @return Annotation[]
+     * @return AnnotationInterface[]
      */
     public function getAnnotations(): array;
 }

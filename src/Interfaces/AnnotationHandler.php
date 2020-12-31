@@ -8,8 +8,8 @@ interface AnnotationHandler {
 
     /**
      * Handles Next Filter
-     * @param Annotation $annotation
-     * @return Annotation
+     * @param AnnotationInterface $annotation
+     * @return AnnotationInterface
      */
-    public function handle(Annotation $annotation): Annotation;
+    public function handle(AnnotationInterface $annotation): AnnotationInterface;
 }

@@ -15,40 +15,40 @@ interface AnnotationParser {
     /**
      * Parse Annotation Block
      * @param string $docComment
-     * @return AnnotationCollection
+     * @return AnnotationCollectionInterface
      */
-    public function parseAnnotation(string $docComment): AnnotationCollection;
+    public function parseAnnotation(string $docComment): AnnotationCollectionInterface;
 
     /**
      * Parse Class Annotations using Class Name
      * @param string $className
-     * @return AnnotationCollection
+     * @return AnnotationCollectionInterface
      * @throws AnnotationParserException On Error
      * @throws InvalidArgumentException on invalid Class Name
      */
-    public function parseClassName(string $className): AnnotationCollection;
+    public function parseClassName(string $className): AnnotationCollectionInterface;
 
     /**
      * Parse Class Annotations
      * @param ReflectionClass $reflector
-     * @return AnnotationCollection
+     * @return AnnotationCollectionInterface
      * @throws AnnotationParserException On Error
      */
-    public function parseClass(ReflectionClass $reflector): AnnotationCollection;
+    public function parseClass(ReflectionClass $reflector): AnnotationCollectionInterface;
 
     /**
      * Parse Class Method Annotations
      * @param ReflectionMethod $reflector
-     * @return AnnotationCollection
+     * @return AnnotationCollectionInterface
      * @throws AnnotationParserException On Error
      */
-    public function parseMethod(ReflectionMethod $reflector): AnnotationCollection;
+    public function parseMethod(ReflectionMethod $reflector): AnnotationCollectionInterface;
 
     /**
      * Parse Class Property Annotations
      * @param ReflectionProperty $reflector
-     * @return AnnotationCollection
+     * @return AnnotationCollectionInterface
      * @throws AnnotationParserException On Error
      */
-    public function parseProperty(ReflectionProperty $reflector): AnnotationCollection;
+    public function parseProperty(ReflectionProperty $reflector): AnnotationCollectionInterface;
 }

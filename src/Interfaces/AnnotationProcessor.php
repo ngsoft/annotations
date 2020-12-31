@@ -8,10 +8,10 @@ interface AnnotationProcessor {
 
     /**
      * Process Annotation Value
-     * @param Annotation $annotation
+     * @param AnnotationInterface $annotation
      * @param AnnotationHandler $handler
      * @param AnnotationFactoryInterface $factory
-     * @return AnnotationCollection
+     * @return AnnotationCollectionInterface
      */
-    public function process(Annotation $annotation, AnnotationHandler $handler, AnnotationFactoryInterface $factory): AnnotationCollection;
+    public function process(AnnotationInterface $annotation, AnnotationHandler $handler, AnnotationFactoryInterface $factory): AnnotationCollectionInterface;
 }

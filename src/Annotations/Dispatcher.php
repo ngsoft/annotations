@@ -8,4 +8,12 @@ use NGSOFT\Interfaces\AnnotationProcessorDispatcher;
 
 class Dispatcher implements AnnotationProcessorDispatcher {
 
+    public function add(string $className): \NGSOFT\Interfaces\AnnotationProcessorDispatcher {
+
+    }
+
+    public function addProcessor(\NGSOFT\Interfaces\AnnotationProcessor $processor): \NGSOFT\Interfaces\AnnotationProcessorDispatcher {
+
+    }
+
 }

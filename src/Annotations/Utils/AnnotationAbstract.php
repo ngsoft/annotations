@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace NGSOFT\Annotations\Utils;
 
-use NGSOFT\Interfaces\Annotation,
+use NGSOFT\Interfaces\AnnotationInterface,
     ReflectionClass,
     ReflectionMethod,
     ReflectionProperty,
     RuntimeException;
 
-abstract class AnnotationAbstract implements Annotation {
+abstract class AnnotationAbstract implements AnnotationInterface {
 
     /** @var string */
     protected $tag;
@@ -51,7 +51,7 @@ abstract class AnnotationAbstract implements Annotation {
     }
 
     /** {@inheritdoc} */
-    public function withValue($value): Annotation {
+    public function withValue($value): AnnotationInterface {
         $clone = clone $this;
         $clone->value = $value;
         return $clone;

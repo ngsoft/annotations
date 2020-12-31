@@ -15,15 +15,15 @@ interface AnnotationFactoryInterface {
      * Creates a new Annotation
      * @param ReflectionClass|ReflectionProperty|ReflectionMethod $reflector
      * @param string $tag
-     * @return Annotation
+     * @return AnnotationInterface
      * @throws InvalidArgumentException if invalid processor
      */
-    public function createAnnotation($reflector, string $tag): Annotation;
+    public function createAnnotation($reflector, string $tag): AnnotationInterface;
 
     /**
      * Creates a new Annotation Collection
-     * @param Annotation $annotations
-     * @return AnnotationCollection
+     * @param AnnotationInterface ...$annotations
+     * @return AnnotationCollectionInterface
      */
-    public function createAnnotationCollection(Annotation ...$annotations): AnnotationCollection;
+    public function createAnnotationCollection(AnnotationInterface ...$annotations): AnnotationCollectionInterface;
 }

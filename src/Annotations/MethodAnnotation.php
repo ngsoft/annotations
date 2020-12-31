@@ -27,7 +27,7 @@ class MethodAnnotation extends AnnotationAbstract {
      * @param string $tag
      * @param mixed $value
      */
-    public function __construct(ReflectionMethod $reflector, string $tag, $value) {
+    public function __construct(ReflectionMethod $reflector, string $tag, $value = null) {
         $this->reflector = $reflector;
         parent::__construct($tag, $value);
     }

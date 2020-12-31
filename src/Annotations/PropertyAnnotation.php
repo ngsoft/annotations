@@ -27,7 +27,7 @@ class PropertyAnnotation extends AnnotationAbstract {
      * @param string $tag
      * @param mixed $value
      */
-    public function __construct(ReflectionProperty $reflector, string $tag, $value) {
+    public function __construct(ReflectionProperty $reflector, string $tag, $value = null) {
         $this->reflector = $reflector;
         parent::__construct($tag, $value);
     }
