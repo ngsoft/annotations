@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace NGSOFT\Annotations\Utils;
 
-use NGSOFT\Annotations\Interfaces\Annotation,
+use NGSOFT\Interfaces\Annotation,
     ReflectionClass,
     ReflectionMethod,
     ReflectionProperty,
@@ -48,6 +48,13 @@ abstract class AnnotationAbstract implements Annotation {
     /** {@inheritdoc} */
     public function getValue() {
         return $this->value;
+    }
+
+    /** {@inheritdoc} */
+    public function withValue($value): Annotation {
+        $clone = clone $this;
+        $clone->value = $value;
+        return $clone;
     }
 
 }

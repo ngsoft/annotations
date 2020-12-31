@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NGSOFT\Annotations\Exceptions;
+namespace NGSOFT\Exceptions;
 
 use ReflectionClass,
     ReflectionMethod,
@@ -11,7 +11,7 @@ use ReflectionClass,
     RuntimeException,
     Throwable;
 
-class ParserException extends RuntimeException {
+class AnnotationParserException extends RuntimeException {
 
     /** @var ReflectionClass|ReflectionProperty|ReflectionMethod  */
     protected $reflector;

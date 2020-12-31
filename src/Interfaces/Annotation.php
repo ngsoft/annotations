@@ -1,6 +1,6 @@
 <?php
 
-namespace NGSOFT\Annotations\Interfaces;
+namespace NGSOFT\Interfaces;
 
 use ReflectionClass,
     ReflectionMethod,
@@ -47,4 +47,11 @@ interface Annotation {
      * @return ReflectionClass|ReflectionProperty|ReflectionMethod
      */
     public function getReflector();
+
+    /**
+     * Returns a new instance with specified value
+     * @param mixed $value
+     * @return Annotation
+     */
+    public function withValue($value): Annotation;
 }

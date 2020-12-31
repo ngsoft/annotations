@@ -11,7 +11,10 @@
         }
     ],
 
-    "require-dev": {},
+    "require-dev": {
+        "psr/cache": "^1",
+        "psr/container": "^1"
+    },
     "require": {
         "php": "^7.4",
         "symfony/polyfill-mbstring": "^1.20"
