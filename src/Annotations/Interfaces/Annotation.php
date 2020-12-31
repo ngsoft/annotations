@@ -2,6 +2,10 @@
 
 namespace NGSOFT\Annotations\Interfaces;
 
+use ReflectionClass,
+    ReflectionMethod,
+    ReflectionProperty;
+
 interface Annotation {
 
     const ANNOTATION_TYPE_CLASS = "CLASS";

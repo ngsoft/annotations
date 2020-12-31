@@ -1,8 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NGSOFT\Annotations\Interfaces;
 
-use NGSOFT\Annotations\Exceptions\ParserException;
+use InvalidArgumentException,
+    NGSOFT\Annotations\Exceptions\ParserException,
+    ReflectionClass,
+    ReflectionMethod,
+    ReflectionProperty;
 
 interface Parser {
 
@@ -11,31 +17,31 @@ interface Parser {
      * @param string $className
      * @return Annotation[]
      * @throws ParserException On Error
-     * @throws \InvalidArgumentException on invalid Class Name
+     * @throws InvalidArgumentException on invalid Class Name
      */
     public function parseClassName(string $className): array;
 
     /**
      * Parse Class Annotations
-     * @param \ReflectionClass $reflector
+     * @param ReflectionClass $reflector
      * @return array
      * @throws ParserException On Error
      */
-    public function parseClass(\ReflectionClass $reflector): array;
+    public function parseClass(ReflectionClass $reflector): array;
 
     /**
      * Parse Class Method Annotations
-     * @param \ReflectionMethod $reflector
+     * @param ReflectionMethod $reflector
      * @return array
      * @throws ParserException On Error
      */
-    public function parseMethod(\ReflectionMethod $reflector): array;
+    public function parseMethod(ReflectionMethod $reflector): array;
 
     /**
      * Parse Class Property Annotations
-     * @param \ReflectionProperty $reflector
+     * @param ReflectionProperty $reflector
      * @return array
      * @throws ParserException On Error
      */
-    public function parseProperty(\ReflectionProperty $reflector): array;
+    public function parseProperty(ReflectionProperty $reflector): array;
 }
