@@ -6,9 +6,10 @@ namespace NGSOFT\Annotations;
 
 use InvalidArgumentException;
 use NGSOFT\Interfaces\{
-    AnnotationCollectionInterface, AnnotationFactoryInterface
+    AnnotationFactoryInterface, AnnotationInterface
 };
 use ReflectionClass,
+    ReflectionException,
     ReflectionMethod,
     ReflectionProperty,
     Reflector;
@@ -29,9 +30,11 @@ class AnnotationParser {
     private $processorDispatcher;
 
     public function __construct(
-            ?AnnotationProcessorDispatcher $processorDispatcher = null
+            ?AnnotationProcessorDispatcher $processorDispatcher = null,
+            ?AnnotationFactoryInterface $annotationFactory = null
     ) {
 
+        if ($annotationFactory instanceof AnnotationFactoryInterface) $this->annotationFactory = $annotationFactory;
         $this->annotationFactory = new AnnotationFactory();
         if ($processorDispatcher instanceof AnnotationProcessorDispatcher) $this->processorDispatcher = $processorDispatcher;
         else $this->processorDispatcher = new AnnotationProcessorDispatcher();
@@ -85,11 +88,8 @@ class AnnotationParser {
         $collection = [];
 
         foreach ($classes as $classReflector) {
-            $collection = array_merge($collection, $this->singleDocCommentParser($reflector));
+            $collection = array_merge($collection, $this->singleDocCommentParser($classReflector));
         }
-
-
-
 
         foreach ($reflector->getProperties() as $propReflector) {
             if (
@@ -154,7 +154,7 @@ class AnnotationParser {
                     /** @var string[] $array */
                     foreach ($parsed as $tag => $array) {
                         foreach ($array as $value) {
-                            $annotation = $this->processorDispatcher->handle($this->annotationFactory->createAnnotation($reflector, $tag, $value));
+                            $annotation = $this->annotationFactory->createAnnotation($reflector, $tag, $value);
                             $collection[] = $annotation;
                         }
                     }
@@ -176,7 +176,7 @@ class AnnotationParser {
             do {
                 $result[] = $reflector;
             } while (($reflector = $reflector->getParentClass()) !== false);
-        } catch (\ReflectionException $error) { $error->getCode(); }
+        } catch (ReflectionException $error) { $error->getCode(); }
         return $result;
     }
 
