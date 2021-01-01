@@ -23,6 +23,9 @@ use function mb_internal_encoding,
 
 mb_internal_encoding("UTF-8");
 
+/**
+ * Parses Class for annotations
+ */
 class AnnotationParser {
 
     const VERSION = '1.0';
@@ -102,12 +105,13 @@ class AnnotationParser {
      * Parse a Class
      * @param ReflectionClass $reflector
      * @param bool $classParents adds parents to results
+     * @param string[] $tags Tags to search for (empty is unlimited)
      * @return AnnotationInterface[]
      * @suppress PhanTypeMismatchArgumentNullable
      */
-    public function parseClass(ReflectionClass $reflector, bool $classParents = false): array {
+    public function parseClass(ReflectionClass $reflector, bool $classParents = false, array $tags = []): array {
         $cacheEnabled = false;
-        if ($item = $this->getCacheItem($reflector, $classParents)) {
+        if ($item = $this->getCacheItem($reflector, $classParents, $tags)) {
             if ($item->isHit()) return $item->get();
             $cacheEnabled = true;
         }
@@ -122,7 +126,7 @@ class AnnotationParser {
         if (!$classParents) $others = array_filter($others, fn($r) => $r->class === $className);
         $reflectors = array_merge($reflectors, $others);
         foreach ($reflectors as $r) {
-            $collection = array_merge($collection, $this->singleDocCommentParser($r));
+            $collection = array_merge($collection, $this->singleDocCommentParser($r, $tags));
         }
         $result = $this->process($collection);
 
@@ -137,32 +141,35 @@ class AnnotationParser {
      * Parse a class using its class name
      * @param string $className
      * @param bool $classParents adds parents to results
+     * @param string[] $tags Tags to search for (empty is unlimited)
      * @return AnnotationInterface[]
      * @throws InvalidArgumentException
      */
-    public function parseClassName(string $className, bool $classParents = false): array {
+    public function parseClassName(string $className, bool $classParents = false, array $tags = []): array {
         if (!class_exists($className)and!interface_exists($className)) {
             throw new InvalidArgumentException(sprintf('Invalid Class %s', $className));
         }
-        return $this->parseClass(new ReflectionClass($className), $classParents);
+        return $this->parseClass(new ReflectionClass($className), $classParents, $tags);
     }
 
     /**
      * Parse a class method
      * @param ReflectionMethod $reflector
+     * @param string[] $tags Tags to search for (empty is unlimited)
      * @return AnnotationInterface[]
      */
-    public function parseMethod(ReflectionMethod $reflector): array {
-        return $this->process($this->singleDocCommentParser($reflector));
+    public function parseMethod(ReflectionMethod $reflector, array $tags = []): array {
+        return $this->process($this->singleDocCommentParser($reflector, $tags));
     }
 
     /**
      * Parse a class Property
      * @param ReflectionProperty $reflector
+     * @param string[] $tags Tags to search for (empty is unlimited)
      * @return AnnotationInterface[]
      */
-    public function parseProperty(ReflectionProperty $reflector): array {
-        return $this->process($this->singleDocCommentParser($reflector));
+    public function parseProperty(ReflectionProperty $reflector, array $tags = []): array {
+        return $this->process($this->singleDocCommentParser($reflector, $tags));
     }
 
     /**
@@ -193,28 +200,16 @@ class AnnotationParser {
     }
 
     /**
-     * Checks if Reflector is valid
-     * @param mixed $reflector
-     */
-    private function assertValidReflector($reflector) {
-
-        if (
-                !($reflector instanceof ReflectionClass)
-                and!($reflector instanceof ReflectionMethod)
-                and!($reflector instanceof ReflectionProperty)
-        ) throw new InvalidArgumentException('Invalid Reflector Provided.');
-    }
-
-    /**
      * Get parsed annotations cached version
      * @param ReflectionClass $reflector
      * @param bool $classParents
+     * @param string[] $tags Tags to search for
      * @return CacheItemInterface|null
      */
-    private function getCacheItem(ReflectionClass $reflector, bool $classParents): ?CacheItemInterface {
+    private function getCacheItem(ReflectionClass $reflector, bool $classParents, array $tags): ?CacheItemInterface {
         if (!$this->cache instanceof CacheItemPoolInterface) return null;
 
-        $key = 'annotations';
+        $key = 'annotations' . implode('', $tags);
         $classes = [$reflector];
         if ($classParents) $classes = $this->getClassParents($reflector);
 
@@ -239,13 +234,14 @@ class AnnotationParser {
     /**
      * Parse Using Reflector
      * @param ReflectionClass|ReflectionProperty|ReflectionMethod $reflector Must implements getDocComment method
+     * @param string[] $tags Tags to search for
      * @return AnnotationInterface[]
      */
-    private function singleDocCommentParser($reflector): array {
+    private function singleDocCommentParser($reflector, array $tags = []): array {
         $collection = [];
         if (method_exists($reflector, 'getDocComment')) {
             if (($docComment = $reflector->getDocComment()) !== false) {
-                $parsed = $this->parseAnnotation($docComment);
+                $parsed = $this->parseAnnotation($docComment, $tags);
                 if (count($parsed) > 0) {
                     /** @var string[] $array */
                     foreach ($parsed as $tagName => $array) {
