@@ -6,7 +6,6 @@ namespace NGSOFT\Interfaces;
 
 use InvalidArgumentException,
     ReflectionClass,
-    ReflectionClassConstant,
     ReflectionMethod,
     ReflectionProperty;
 
@@ -14,7 +13,7 @@ interface AnnotationFactoryInterface {
 
     /**
      * Creates a new Annotation
-     * @param ReflectionClass|ReflectionProperty|ReflectionMethod|ReflectionClassConstant $reflector
+     * @param ReflectionClass|ReflectionProperty|ReflectionMethod $reflector
      * @param TagInterface $tag
      * @return AnnotationInterface
      * @throws InvalidArgumentException if invalid reflector

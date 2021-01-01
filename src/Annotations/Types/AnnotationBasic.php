@@ -6,10 +6,9 @@ namespace NGSOFT\Annotations\Types;
 
 use InvalidArgumentException;
 use NGSOFT\Interfaces\{
-    AnnotationInterface, AnnotationTagInterface
+    AnnotationInterface, TagInterface
 };
 use ReflectionClass,
-    ReflectionClassConstant,
     ReflectionMethod,
     ReflectionProperty,
     RuntimeException;
@@ -31,7 +30,7 @@ class AnnotationBasic implements AnnotationInterface {
     /** @var string */
     protected $type;
 
-    /** @var ReflectionClass|ReflectionMethod|ReflectionProperty|ReflectionClassConstant */
+    /** @var ReflectionClass|ReflectionMethod|ReflectionProperty */
     protected $reflector;
 
     /**
@@ -45,15 +44,13 @@ class AnnotationBasic implements AnnotationInterface {
                 $reflector instanceof ReflectionClass
                 or $reflector instanceof ReflectionProperty
                 or $reflector instanceof ReflectionMethod
-                or $reflector instanceof ReflectionClassConstant
         ) return;
         throw new InvalidArgumentException('Invalid Reflector Provided.');
     }
 
     /**
-     * @param ReflectionClass|ReflectionProperty|ReflectionMethod|ReflectionClassConstant $reflector
-     * @param string $tag
-     * @param mixed $value
+     * @param ReflectionClass|ReflectionProperty|ReflectionMethod $reflector
+     * @param TagInterface $tag
      */
     public function __construct($reflector, TagInterface $tag) {
         $this->assertValidReflection($reflector);
@@ -61,11 +58,12 @@ class AnnotationBasic implements AnnotationInterface {
         $this->tag = $tag;
         $this->type = array_search(get_class($reflector), self::ANNOTATION_TYPES);
         $this->name = $reflector->getName();
-        if ($reflector instanceof ReflectionClass) return $reflector->getName();
-        elseif (
+        if ($reflector instanceof ReflectionClass) {
+            $this->className = $reflector->getName();
+            $this->fileName = $reflector->getFileName();
+        } elseif (
                 $reflector instanceof ReflectionProperty
                 or $reflector instanceof ReflectionMethod
-                or $reflector instanceof ReflectionClassConstant
         ) {
             $this->className = $reflector->class;
             $this->fileName = (new ReflectionClass($reflector->class))->getFileName();
@@ -117,7 +115,7 @@ class AnnotationBasic implements AnnotationInterface {
     ///////////////////////////////// Configurators  /////////////////////////////////
 
     /** {@inheritdoc} */
-    public function withTag(AnnotationTagInterface $tag): AnnotationInterface {
+    public function withTag(TagInterface $tag): AnnotationInterface {
         $clone = clone $this;
         $clone->tag = $tag;
         return $clone;
@@ -155,7 +153,7 @@ class AnnotationBasic implements AnnotationInterface {
     /** {@inheritdoc} */
     public function unserialize($serialized) {
 
-        $array = $this->unserialize($serialized);
+        $array = \unserialize($serialized);
         if (!is_array($array)) throw new RuntimeException('Cannot unserialize, invalid value');
 
         $this->tag = $array['tag'];

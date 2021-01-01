@@ -6,12 +6,11 @@ namespace NGSOFT\Annotations;
 
 use InvalidArgumentException;
 use NGSOFT\{
-    Annotations\Tags\TagBasic, Annotations\Types\AnnotationBasic, Annotations\Types\ClassAnnotation,
-    Annotations\Types\ConstantAnnotation, Annotations\Types\MethodAnnotation, Annotations\Types\PropertyAnnotation,
-    Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface, Interfaces\TagInterface
+    Annotations\Tags\TagBasic, Annotations\Tags\TagProperty, Annotations\Types\AnnotationBasic, Annotations\Types\ClassAnnotation,
+    Annotations\Types\MethodAnnotation, Annotations\Types\PropertyAnnotation, Interfaces\AnnotationFactoryInterface,
+    Interfaces\AnnotationInterface, Interfaces\TagInterface
 };
 use ReflectionClass,
-    ReflectionClassConstant,
     ReflectionMethod,
     ReflectionProperty;
 
@@ -21,15 +20,22 @@ class AnnotationFactory implements AnnotationFactoryInterface {
     protected $annotationClasses = [
         ReflectionClass::class => ClassAnnotation::class,
         ReflectionMethod::class => MethodAnnotation::class,
-        ReflectionProperty::class => PropertyAnnotation::class,
-        ReflectionClassConstant::class => ConstantAnnotation::class
+        ReflectionProperty::class => PropertyAnnotation::class
     ];
 
     /** @var string */
     protected $defaultTagClass = TagBasic::class;
 
     /** @var array<string,string> */
-    protected $tagClasses = [];
+    protected $tagClasses = [
+        'var' => TagProperty::class,
+        'return' => TagProperty::class,
+        'param' => TagProperty::class,
+        'method' => TagProperty::class,
+        'property' => TagProperty::class,
+        'property-read' => TagProperty::class,
+        'property-write' => TagProperty::class,
+    ];
 
     /**
      * Add a custom Tag
@@ -71,7 +77,6 @@ class AnnotationFactory implements AnnotationFactoryInterface {
                 $reflector instanceof ReflectionClass
                 or $reflector instanceof ReflectionProperty
                 or $reflector instanceof ReflectionMethod
-                or $reflector instanceof ReflectionClassConstant
         ) return;
         throw new InvalidArgumentException('Invalid Reflector Provided.');
     }

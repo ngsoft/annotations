@@ -6,15 +6,21 @@ namespace NGSOFT\Annotations\Processors;
 
 use JsonException;
 use NGSOFT\{
-    Exceptions\AnnotationException, Interfaces\AnnotationHandlerInterface, Interfaces\AnnotationInterface,
-    Interfaces\AnnotationProcessorInterface
+    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Exceptions\AnnotationException, Interfaces\AnnotationInterface,
+    Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 use function mb_strpos;
 
-class ArrayDetectorProcessor implements AnnotationProcessorInterface {
+class ArrayDetectorProcessor implements TagProcessorInterface {
 
     const DETECT_LIST_REGEX = '/^[\(](.*?)[\)]/';
     const DETECT_KEY_VALUE_PAIR = '/^[{](.*?)[}]/';
+
+    /** @var string[] */
+    public static $ignoreTagClasses = [
+        TagProperty::class,
+        TagList::class,
+    ];
 
     /**
      * Detects if list
@@ -104,16 +110,20 @@ class ArrayDetectorProcessor implements AnnotationProcessorInterface {
         return $result;
     }
 
-    public function process(AnnotationInterface $annotation, AnnotationHandlerInterface $handler): AnnotationInterface {
-        $input = $annotation->getValue();
-        if ($this->isList($input)) {
-            $output = $this->parseList($input);
-            if (count($output) > 0) {
-                if (count($output) === 1 and array_key_exists(0, $output)) $annotation = $annotation->withValue($output[0]);
-                else $annotation = $annotation->withValue($output);
-            } else throw new AnnotationException($annotation);
-        }
+    /** {@inheritdoc} */
+    public function process(AnnotationInterface $annotation, TagHandlerInterface $handler): TagInterface {
+        $tag = $annotation->getTag();
 
+        if (!in_array(get_class($tag), self::$ignoreTagClasses)) {
+            $input = $tag->getValue();
+            if ($this->isList($input)) {
+                $output = $this->parseList($input);
+                if (count($output) > 0) {
+                    if (count($output) === 1 and array_key_exists(0, $output)) return $tag->withValue($output[0]);
+                    else return new TagList($tag->getName(), $output);
+                } else throw new AnnotationException($annotation);
+            }
+        }
         return $handler->handle($annotation);
     }
 

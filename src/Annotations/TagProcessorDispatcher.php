@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations;
 
 use NGSOFT\{
-    Annotations\Processors\ArrayDetectorProcessor, Annotations\Utils\NullHandler, Annotations\Utils\ProcessorHandler,
-    Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
+    Annotations\Processors\ArrayDetectorProcessor, Annotations\Processors\TypeHintingProcessor, Annotations\TagProcessorDispatcher,
+    Annotations\Utils\NullHandler, Annotations\Utils\ProcessorHandler, Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface,
+    Interfaces\TagProcessorInterface
 };
 use RuntimeException;
 
 class TagProcessorDispatcher {
 
     const DEFAULT_PROCESSORS = [
+        TypeHintingProcessor::class,
         // to run first (Last position)
         ArrayDetectorProcessor::class
     ];

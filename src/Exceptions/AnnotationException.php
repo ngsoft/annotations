@@ -32,8 +32,8 @@ class AnnotationException extends RuntimeException {
             $message = sprintf(
                     'Cannot parse %s Annotation "@%s %s" in file "%s"',
                     $annotation->getType(),
-                    $annotation->getTag(),
-                    $annotation->getValue(),
+                    $annotation->getTagName(),
+                    $annotation->getTagValue(),
                     $annotation->getFileName()
             );
         }

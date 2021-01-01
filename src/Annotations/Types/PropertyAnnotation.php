@@ -6,7 +6,7 @@ namespace NGSOFT\Annotations\Types;
 
 use ReflectionProperty;
 
-class PropertyAnnotation extends AnnotationAbstract {
+class PropertyAnnotation extends AnnotationBasic {
 
     /** @var ReflectionProperty */
     protected $reflector;

@@ -30,7 +30,7 @@ class AnnotationParser {
     /** @var AnnotationFactoryInterface */
     private $annotationFactory;
 
-    /** @var AnnotationProcessorDispatcher */
+    /** @var TagProcessorDispatcher */
     private $processorDispatcher;
 
     /** @var string[] */
@@ -40,14 +40,14 @@ class AnnotationParser {
     private $cache;
 
     public function __construct(
-            ?AnnotationProcessorDispatcher $processorDispatcher = null,
+            ?TagProcessorDispatcher $processorDispatcher = null,
             ?AnnotationFactoryInterface $annotationFactory = null
     ) {
         $this->ignoreTags = self::DEFAULT_IGNORE_TAGS;
         if ($annotationFactory instanceof AnnotationFactoryInterface) $this->annotationFactory = $annotationFactory;
         $this->annotationFactory = new AnnotationFactory();
-        if ($processorDispatcher instanceof AnnotationProcessorDispatcher) $this->processorDispatcher = $processorDispatcher;
-        else $this->processorDispatcher = new AnnotationProcessorDispatcher();
+        if ($processorDispatcher instanceof TagProcessorDispatcher) $this->processorDispatcher = $processorDispatcher;
+        else $this->processorDispatcher = new TagProcessorDispatcher();
     }
 
     /**
@@ -100,6 +100,7 @@ class AnnotationParser {
      * @param ReflectionClass $reflector
      * @param bool $classParents adds parents to results
      * @return AnnotationInterface[]
+     * @suppress PhanTypeMismatchArgumentNullable
      */
     public function parseClass(ReflectionClass $reflector, bool $classParents = false): array {
         $cacheEnabled = false;
@@ -229,21 +230,7 @@ class AnnotationParser {
      * @return bool
      */
     private function saveCacheItem(CacheItemInterface $item): bool {
-
         return $this->cache->save($item);
-    }
-
-    /**
-     * Get FileName for Reflector
-     * @param ReflectionClass|ReflectionProperty|ReflectionMethod $reflector
-     */
-    private function getFileName($reflector) {
-
-        $this->assertValidReflector($reflector);
-        if ($reflector instanceof ReflectionProperty or $reflector instanceof ReflectionMethod) {
-            $reflector = new ReflectionClass($this->getClassName());
-        }
-        if ($reflector instanceof ReflectionClass) return $reflector->getFileName();
     }
 
     /**
@@ -258,9 +245,10 @@ class AnnotationParser {
                 $parsed = $this->parseAnnotation($docComment);
                 if (count($parsed) > 0) {
                     /** @var string[] $array */
-                    foreach ($parsed as $tag => $array) {
+                    foreach ($parsed as $tagName => $array) {
                         foreach ($array as $value) {
-                            $annotation = $this->annotationFactory->createAnnotation($reflector, $tag, $value);
+                            $tag = $this->annotationFactory->createTag($tagName, $value);
+                            $annotation = $this->annotationFactory->createAnnotation($reflector, $tag);
                             $collection[] = $annotation;
                         }
                     }

@@ -6,7 +6,6 @@ namespace NGSOFT\Interfaces;
 
 use JsonSerializable,
     ReflectionClass,
-    ReflectionClassConstant,
     ReflectionMethod,
     ReflectionProperty,
     Serializable;
@@ -16,12 +15,10 @@ interface AnnotationInterface extends Serializable, JsonSerializable {
     const ANNOTATION_TYPE_CLASS = "CLASS";
     const ANNOTATION_TYPE_PROPERTY = "PROPERTY";
     const ANNOTATION_TYPE_METHOD = "METHOD";
-    const ANNOTATION_TYPE_CLASS_CONSTANT = "CONSTANT";
     const ANNOTATION_TYPES = [
         self::ANNOTATION_TYPE_CLASS => ReflectionClass::class,
         self::ANNOTATION_TYPE_PROPERTY => ReflectionProperty::class,
-        self::ANNOTATION_TYPE_METHOD => ReflectionMethod::class,
-        self::ANNOTATION_TYPE_CLASS_CONSTANT => ReflectionClassConstant::class
+        self::ANNOTATION_TYPE_METHOD => ReflectionMethod::class
     ];
 
     ///////////////////////////////// Shorthands  /////////////////////////////////
@@ -44,7 +41,7 @@ interface AnnotationInterface extends Serializable, JsonSerializable {
 
     /**
      * Returns a new instance with the given tag
-     * @param AnnotationTagInterface $tag
+     * @param TagInterface $tag
      * @return AnnotationInterface
      */
     public function withTag(TagInterface $tag): AnnotationInterface;
@@ -93,7 +90,7 @@ interface AnnotationInterface extends Serializable, JsonSerializable {
 
     /**
      * Get The Reflector linked to the annotation
-     * @return ReflectionClass|ReflectionProperty|ReflectionMethod|ReflectionClassConstant
+     * @return ReflectionClass|ReflectionProperty|ReflectionMethod
      */
     public function getReflector();
 }

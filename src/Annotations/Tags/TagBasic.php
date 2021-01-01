@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Tags;
 
 use InvalidArgumentException,
-    NGSOFT\Interfaces\AnnotationTagInterface,
+    NGSOFT\Interfaces\TagInterface,
     RuntimeException;
 
 /**
  * This is a Basic Tag
  * You can extends this class to create custom tags
  */
-class TagBasic implements AnnotationTagInterface {
+class TagBasic implements TagInterface {
 
     /** @var string */
     protected $name = '';
@@ -28,7 +28,7 @@ class TagBasic implements AnnotationTagInterface {
         return $this->value;
     }
 
-    public function withName(string $name): AnnotationTagInterface {
+    public function withName(string $name): TagInterface {
         if (!preg_match(self::VALID_TAG_NAME_REGEX, $name)) {
             throw new InvalidArgumentException(sprintf('Invalid tag name "%s".', $name));
         }
@@ -38,7 +38,7 @@ class TagBasic implements AnnotationTagInterface {
     }
 
     /** {@inheritdoc} */
-    public function withValue($value): AnnotationTagInterface {
+    public function withValue($value): TagInterface {
         $clone = clone $this;
         $clone->value = $value;
         return $clone;
@@ -60,7 +60,7 @@ class TagBasic implements AnnotationTagInterface {
 
     /** {@inheritdoc} */
     public function unserialize($serialized) {
-        $array = $this->unserialize($serialized);
+        $array = \unserialize($serialized);
         if (!is_array($array)) throw new RuntimeException('Cannot unserialize, invalid value');
         $this->name = $array['name'];
         $this->value = $array['value'];
