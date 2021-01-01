@@ -2,27 +2,36 @@
 
 declare(strict_types=1);
 
-namespace NGSOFT\Annotations\Utils;
+namespace NGSOFT\Annotations\Types;
 
 use InvalidArgumentException,
     NGSOFT\Interfaces\AnnotationInterface,
     ReflectionClass,
+    ReflectionClassConstant,
     ReflectionMethod,
     ReflectionProperty,
+    Reflector,
     RuntimeException;
 
 abstract class AnnotationAbstract implements AnnotationInterface {
 
-    /** @var string */
+    /** @var AnnotationTagInterface */
     protected $tag;
 
     /** @var mixed */
     protected $value;
 
-    /**
-     * @param ReflectionClass|ReflectionProperty|ReflectionMethod $reflector
-     */
-    abstract protected function setReflector($reflector);
+    /** @var string */
+    protected $className;
+
+    /** @var string */
+    protected $fileName;
+
+    /** @var string */
+    protected $name;
+
+    /** @var ReflectionClass|ReflectionMethod|ReflectionProperty|ReflectionClassConstant */
+    protected $reflector;
 
     /**
      * @param ReflectionClass|ReflectionProperty|ReflectionMethod $reflector
@@ -119,6 +128,7 @@ abstract class AnnotationAbstract implements AnnotationInterface {
             case ReflectionClass::class:
                 $reflector = new \ReflectionClass($class);
                 break;
+            case ReflectionClassConstant::class:
             case ReflectionProperty::class:
             case ReflectionMethod::class:
                 $reflector = new $reflectorClass($class, $name);

@@ -6,6 +6,7 @@ namespace NGSOFT\Interfaces;
 
 use JsonSerializable,
     ReflectionClass,
+    ReflectionClassConstant,
     ReflectionMethod,
     ReflectionProperty,
     Serializable;
@@ -15,18 +16,48 @@ interface AnnotationInterface extends Serializable, JsonSerializable {
     const ANNOTATION_TYPE_CLASS = "CLASS";
     const ANNOTATION_TYPE_PROPERTY = "PROPERTY";
     const ANNOTATION_TYPE_METHOD = "METHOD";
+    const ANNOTATION_TYPE_CLASS_CONSTANT = "CONSTANT";
+    const ANNOTATION_TYPES = [
+        self::ANNOTATION_TYPE_CLASS => ReflectionClass::class,
+        self::ANNOTATION_TYPE_PROPERTY => ReflectionProperty::class,
+        self::ANNOTATION_TYPE_METHOD => ReflectionMethod::class,
+        self::ANNOTATION_TYPE_CLASS_CONSTANT => ReflectionClassConstant::class
+    ];
+
+    ///////////////////////////////// Shorthands  /////////////////////////////////
 
     /**
-     * Get Annotation Tag
+     * Get Annotation Tag Name
      * @return string
      */
-    public function getTag(): string;
+    public function getTagName(): string;
 
     /**
      * Get Annotation Parsed Value
      * @return mixed
      */
-    public function getValue();
+    public function getTagValue();
+
+
+
+    ///////////////////////////////// Configurators  /////////////////////////////////
+
+    /**
+     * Returns a new instance with the given tag
+     * @param AnnotationTagInterface $tag
+     * @return AnnotationInterface
+     */
+    public function withTag(AnnotationTagInterface $tag): AnnotationInterface;
+
+
+
+    ///////////////////////////////// GETTERS  /////////////////////////////////
+
+    /**
+     * Gat the AnnotationTagInterface instance
+     * @return AnnotationTagInterface
+     */
+    public function getTag(): AnnotationTagInterface;
 
     /**
      * Get Annotation Type (as defined ANNOTATION_TYPE_*)
@@ -47,21 +78,14 @@ interface AnnotationInterface extends Serializable, JsonSerializable {
     public function getName(): string;
 
     /**
-     * Get The Reflector linked to the annotation
-     * @return ReflectionClass|ReflectionProperty|ReflectionMethod
-     */
-    public function getReflector();
-
-    /**
      * Get the filename linked to the annotation
      * @return string
      */
     public function getFileName(): string;
 
     /**
-     * Returns a new instance with specified value
-     * @param mixed $value
-     * @return AnnotationInterface
+     * Get The Reflector linked to the annotation
+     * @return ReflectionClass|ReflectionProperty|ReflectionMethod|ReflectionClassConstant
      */
-    public function withValue($value): AnnotationInterface;
+    public function getReflector();
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NGSOFT\Annotations;
+namespace NGSOFT\Annotations\Types;
 
 use NGSOFT\Annotations\Utils\AnnotationAbstract,
     ReflectionMethod;

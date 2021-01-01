@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NGSOFT\Annotations\Utils\PhpParser;
+namespace NGSOFT\Annotations\PhpParser;
 
 use ReflectionClass,
     SplFileObject;
