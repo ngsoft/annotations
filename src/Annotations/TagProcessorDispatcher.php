@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations;
 
 use NGSOFT\{
-    Annotations\Processors\ArrayDetectorProcessor, Annotations\Processors\BooleanProcessor,
+    Annotations\Processors\ArrayDetectorProcessor, Annotations\Processors\BooleanProcessor, Annotations\Processors\NumberProcessor,
     Annotations\Processors\TypeHintingProcessor, Annotations\TagProcessorDispatcher, Annotations\Utils\NullHandler,
     Annotations\Utils\ProcessorHandler, Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface,
     Interfaces\TagProcessorInterface
@@ -15,7 +15,7 @@ use RuntimeException;
 class TagProcessorDispatcher {
 
     const DEFAULT_PROCESSORS = [
-        Processors\NumberProcessor::class,
+        NumberProcessor::class,
         BooleanProcessor::class,
         TypeHintingProcessor::class,
         // to run first (Last position)
@@ -37,7 +37,7 @@ class TagProcessorDispatcher {
         foreach ($processors as $processor) {
             if (
                     !($processor instanceof TagProcessorInterface)
-            ) throw new RuntimeException('Invalid AnnotationProcessor.');
+            ) throw new RuntimeException('Invalid Processor.');
             $this->addProcessor($processor);
         }
     }

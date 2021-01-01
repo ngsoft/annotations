@@ -16,9 +16,12 @@ use ReflectionClass,
     ReflectionMethod,
     ReflectionProperty,
     SplFileInfo;
-use function mb_strlen,
+use function mb_internal_encoding,
+             mb_strlen,
              mb_strpos,
              mb_substr;
+
+mb_internal_encoding("UTF-8");
 
 class AnnotationParser {
 

@@ -52,14 +52,10 @@ class TypeHintingProcessor implements TagProcessorInterface {
         $output = sprintf('%s\\%s', $reflector->getNamespaceName(), $toresolve);
         if ($this->exists($output)) return $output;
 
-
         if (!isset(self::$useCache[$baseClass])) {
             $parser = new PhpParser();
             self::$useCache[$baseClass] = $parser->parseClass($reflector);
         }
-
-
-
         foreach (self::$useCache[$baseClass] as $lowercase => $statement) {
 
             //statement ends with $toresolve
@@ -77,10 +73,6 @@ class TypeHintingProcessor implements TagProcessorInterface {
             $output = sprintf('%s\\%s', $statement, $toresolve);
             if ($this->exists($output)) return $output;
         }
-
-
-
-
         return null;
     }
 
@@ -93,6 +85,10 @@ class TypeHintingProcessor implements TagProcessorInterface {
         return class_exists($className) or interface_exists($className);
     }
 
+    /**
+     * {@inheritdoc}
+     * @suppress PhanUnusedVariable
+     */
     public function process(AnnotationInterface $annotation, TagHandlerInterface $handler): TagInterface {
 
         $tag = $annotation->getTag();

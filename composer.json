@@ -26,9 +26,7 @@
         "psr-4": {
             "NGSOFT\\": "src/"
         },
-        "files": [
-            "src/Annotations/functions.php"
-        ]
+        "files": []
     },
     "minimum-stability": "dev",
     "prefer-stable": true

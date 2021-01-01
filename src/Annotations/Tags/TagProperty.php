@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NGSOFT\Annotations\Tags;
 
-use InvalidArgumentException;
+use InvalidArgumentException,
+    RuntimeException;
 
 /**
  * Tag that uses type hinting (var, return, method ...)

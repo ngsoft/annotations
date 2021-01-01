@@ -119,8 +119,7 @@ class ArrayDetectorProcessor implements TagProcessorInterface {
             if ($this->isList($input)) {
                 $output = $this->parseList($input);
                 if (count($output) > 0) {
-                    if (count($output) === 1 and array_key_exists(0, $output)) return $tag->withValue($output[0]);
-                    else return new TagList($tag->getName(), $output);
+                    return new TagList($tag->getName(), $output);
                 } else throw new AnnotationException($annotation);
             }
         }
