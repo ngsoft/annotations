@@ -8,7 +8,7 @@ use InvalidArgumentException,
     JsonSerializable,
     Serializable;
 
-interface AnnotationTagInterface extends Serializable, JsonSerializable {
+interface TagInterface extends Serializable, JsonSerializable {
 
     const VALID_TAG_NAME_REGEX = '/^[a-z][\w\-]+$/i';
 
@@ -27,15 +27,15 @@ interface AnnotationTagInterface extends Serializable, JsonSerializable {
     /**
      * Returns a new instance with given tag name
      * @param string $name
-     * @return AnnotationTagInterface
+     * @return TagInterface
      * @throws InvalidArgumentException on invalid name
      */
-    public function withName(string $name): AnnotationTagInterface;
+    public function withName(string $name): TagInterface;
 
     /**
      * Returns a new Instance with given tag value
      * @param mixed $value
-     * @return AnnotationTagInterface
+     * @return TagInterface
      */
-    public function withValue($value): AnnotationTagInterface;
+    public function withValue($value): TagInterface;
 }

@@ -25,8 +25,8 @@ interface AnnotationFactoryInterface {
      * Creates a new Tag
      * @param string $name
      * @param mixed $value
-     * @return AnnotationTagInterface
+     * @return TagInterface
      * @throws InvalidArgumentException if invalid tag name
      */
-    public function createTag(string $name, $value = null): AnnotationTagInterface;
+    public function createTag(string $name, $value = null): TagInterface;
 }

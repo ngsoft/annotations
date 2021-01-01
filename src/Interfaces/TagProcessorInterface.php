@@ -6,14 +6,14 @@ namespace NGSOFT\Interfaces;
 
 use NGSOFT\Exceptions\AnnotationException;
 
-interface AnnotationProcessorInterface {
+interface TagProcessorInterface {
 
     /**
-     * Process Annotation Value
+     * Process Tag
      * @param AnnotationInterface $annotation
      * @param AnnotationHandlerInterface $handler
      * @return AnnotationInterface
      * @throws AnnotationException on Error
      */
-    public function process(AnnotationInterface $annotation, AnnotationHandlerInterface $handler): AnnotationInterface;
+    public function process(AnnotationTagInterface $annotation, AnnotationHandlerInterface $handler): AnnotationInterface;
 }

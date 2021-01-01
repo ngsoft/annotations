@@ -6,7 +6,7 @@ namespace NGSOFT\Annotations;
 
 use InvalidArgumentException;
 use NGSOFT\{
-    Annotations\Tags\BasicTag, Annotations\Types\AnnotationBasic, Annotations\Types\ClassAnnotation,
+    Annotations\Tags\TagBasic, Annotations\Types\AnnotationBasic, Annotations\Types\ClassAnnotation,
     Annotations\Types\ConstantAnnotation, Annotations\Types\MethodAnnotation, Annotations\Types\PropertyAnnotation,
     Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface, Interfaces\AnnotationTagInterface
 };
@@ -26,7 +26,7 @@ class AnnotationFactory implements AnnotationFactoryInterface {
     ];
 
     /** @var string */
-    protected $defaultTagClass = BasicTag::class;
+    protected $defaultTagClass = TagBasic::class;
 
     /** @var array<string,string> */
     protected $tagClasses = [];

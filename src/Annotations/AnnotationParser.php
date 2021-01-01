@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations;
 
 use InvalidArgumentException;
-use NGSOFT\Interfaces\{
-    AnnotationFactoryInterface, AnnotationInterface
+use NGSOFT\{
+    Annotations\Utils\Cache, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface
 };
 use Psr\Cache\{
     CacheItemInterface, CacheItemPoolInterface
@@ -16,8 +16,7 @@ use ReflectionClass,
     ReflectionMethod,
     ReflectionProperty,
     SplFileInfo;
-use function mb_internal_encoding,
-             mb_strlen,
+use function mb_strlen,
              mb_strpos,
              mb_substr;
 
@@ -56,7 +55,7 @@ class AnnotationParser {
      * @param string ...$tags
      * @return self
      */
-    public function ignoreTags(string ...$tags): self {
+    public function addIgnoredTags(string ...$tags): self {
         $this->ignoreTags = array_merge($this->ignoreTags, $tags);
         return $this;
     }
@@ -184,8 +183,8 @@ class AnnotationParser {
      * @param int|null $ttl
      * @return self
      */
-    public function setCache(CacheItemPoolInterface $cache, ?int $ttl = null): self {
-        $this->cache = new Utils\Cache($cache, $ttl);
+    public function setCachePool(CacheItemPoolInterface $cache, ?int $ttl = null): self {
+        $this->cache = new Cache($cache, $ttl);
         return $this;
     }
 

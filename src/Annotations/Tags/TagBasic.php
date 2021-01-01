@@ -4,7 +4,15 @@ declare(strict_types=1);
 
 namespace NGSOFT\Annotations\Tags;
 
-class BasicTag implements \NGSOFT\Interfaces\AnnotationTagInterface {
+use InvalidArgumentException,
+    NGSOFT\Interfaces\AnnotationTagInterface,
+    RuntimeException;
+
+/**
+ * This is a Basic Tag
+ * You can extends this class to create custom tags
+ */
+class TagBasic implements AnnotationTagInterface {
 
     /** @var string */
     protected $name = '';
@@ -20,7 +28,7 @@ class BasicTag implements \NGSOFT\Interfaces\AnnotationTagInterface {
         return $this->value;
     }
 
-    public function withName(string $name): \NGSOFT\Interfaces\AnnotationTagInterface {
+    public function withName(string $name): AnnotationTagInterface {
         if (!preg_match(self::VALID_TAG_NAME_REGEX, $name)) {
             throw new InvalidArgumentException(sprintf('Invalid tag name "%s".', $name));
         }
@@ -30,7 +38,7 @@ class BasicTag implements \NGSOFT\Interfaces\AnnotationTagInterface {
     }
 
     /** {@inheritdoc} */
-    public function withValue($value): \NGSOFT\Interfaces\AnnotationTagInterface {
+    public function withValue($value): AnnotationTagInterface {
         $clone = clone $this;
         $clone->value = $value;
         return $clone;
