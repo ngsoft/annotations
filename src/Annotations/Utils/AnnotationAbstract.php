@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace NGSOFT\Annotations\Utils;
 
-use NGSOFT\Interfaces\AnnotationInterface,
+use InvalidArgumentException,
+    NGSOFT\Interfaces\AnnotationInterface,
     ReflectionClass,
     ReflectionMethod,
     ReflectionProperty,
@@ -19,12 +20,25 @@ abstract class AnnotationAbstract implements AnnotationInterface {
     protected $value;
 
     /**
+     * @param ReflectionClass|ReflectionProperty|ReflectionMethod $reflector
+     */
+    abstract protected function setReflector($reflector);
+
+    /**
+     * @param ReflectionClass|ReflectionProperty|ReflectionMethod $reflector
      * @param string $tag
      * @param mixed $value
      */
-    public function __construct(string $tag, $value) {
+    public function __construct($reflector, string $tag, $value) {
+        if (
+                !($reflector instanceof ReflectionClass)
+                and!($reflector instanceof ReflectionMethod)
+                and!($reflector instanceof ReflectionProperty)
+        ) throw new InvalidArgumentException('Invalid Reflector Provided.');
+
         $this->tag = $tag;
         $this->value = $value;
+        $this->setReflector($reflector);
     }
 
     /** {@inheritdoc} */
@@ -66,6 +80,51 @@ abstract class AnnotationAbstract implements AnnotationInterface {
         $clone = clone $this;
         $clone->value = $value;
         return $clone;
+    }
+
+    /** {@inheritdoc} */
+    public function jsonSerialize() {
+
+        return [
+            'className' => $this->getClassName(),
+            'type' => $this->getType(),
+            'name' => $this->getName(),
+            'reflector' => get_class($this->getReflector()),
+            'filename' => $this->getFileName(),
+            'tag' => $this->getTag(),
+            'value' => $this->getValue()
+        ];
+    }
+
+    /** {@inheritdoc} */
+    public function serialize() {
+        $array = $this->jsonSerialize();
+        return \serialize($array);
+    }
+
+    /** {@inheritdoc} */
+    public function unserialize($serialized) {
+
+        $array = \unserialize($serialized);
+        if (!is_array($array)) throw new RuntimeException('Invalid data provided');
+
+        $this->tag = $array['tag'];
+        $this->value = $array['value'];
+
+        $reflectorClass = $array['reflector'];
+        $class = $array['className'];
+        $name = $array['name'];
+        switch ($reflectorClass) {
+
+            case ReflectionClass::class:
+                $reflector = new \ReflectionClass($class);
+                break;
+            case ReflectionProperty::class:
+            case ReflectionMethod::class:
+                $reflector = new $reflectorClass($class, $name);
+                break;
+        }
+        if (isset($reflector)) $this->setReflector($reflector);
     }
 
 }

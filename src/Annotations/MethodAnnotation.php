@@ -22,14 +22,9 @@ class MethodAnnotation extends AnnotationAbstract {
         return self::ANNOTATION_TYPE_METHOD;
     }
 
-    /**
-     * @param ReflectionMethod $reflector
-     * @param string $tag
-     * @param mixed $value
-     */
-    public function __construct(ReflectionMethod $reflector, string $tag, $value = null) {
+    /** {@inheritdoc} */
+    protected function setReflector($reflector) {
         $this->reflector = $reflector;
-        parent::__construct($tag, $value);
     }
 
 }

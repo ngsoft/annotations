@@ -22,14 +22,9 @@ class PropertyAnnotation extends AnnotationAbstract {
         return self::ANNOTATION_TYPE_PROPERTY;
     }
 
-    /**
-     * @param ReflectionProperty $reflector
-     * @param string $tag
-     * @param mixed $value
-     */
-    public function __construct(ReflectionProperty $reflector, string $tag, $value = null) {
+    /** {@inheritdoc} */
+    protected function setReflector($reflector) {
         $this->reflector = $reflector;
-        parent::__construct($tag, $value);
     }
 
 }

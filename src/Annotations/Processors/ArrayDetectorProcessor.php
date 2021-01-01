@@ -22,7 +22,6 @@ class ArrayDetectorProcessor implements AnnotationProcessorInterface {
      * @return bool
      */
     private function isList(string $input): bool {
-
         return mb_strpos($input, '(') === 0 and mb_strpos($input, ')') !== false;
     }
 
@@ -106,23 +105,13 @@ class ArrayDetectorProcessor implements AnnotationProcessorInterface {
     }
 
     public function process(AnnotationInterface $annotation, AnnotationHandlerInterface $handler): AnnotationInterface {
-
-
         $input = $annotation->getValue();
-
         if ($this->isList($input)) {
-
             $output = $this->parseList($input);
-
             if (count($output) > 0) {
                 if (count($output) === 1 and array_key_exists(0, $output)) $annotation = $annotation->withValue($output[0]);
                 else $annotation = $annotation->withValue($output);
-
-                var_dump($annotation);
             } else throw new AnnotationException($annotation);
-
-
-            //var_dump([$input => $output]);
         }
 
         return $handler->handle($annotation);

@@ -28,7 +28,7 @@ class Cache implements CacheItemPoolInterface {
             ?int $ttl = null
     ) {
         $this->cache = $cache;
-        $this->ttl = $ttl;
+        if (is_int($ttl)) $this->ttl = $ttl;
     }
 
     /** {@inheritdoc} */

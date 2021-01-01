@@ -8,20 +8,20 @@ use InvalidArgumentException;
 use NGSOFT\Interfaces\{
     AnnotationFactoryInterface, AnnotationInterface
 };
+use Psr\Cache\{
+    CacheItemInterface, CacheItemPoolInterface
+};
 use ReflectionClass,
     ReflectionException,
     ReflectionMethod,
-    ReflectionProperty;
+    ReflectionProperty,
+    SplFileInfo;
 use function mb_internal_encoding,
              mb_strlen,
              mb_strpos,
              mb_substr;
 
 mb_internal_encoding("UTF-8");
-
-//$fileinfo = new SplFileInfo($refl->getFileName());
-//using modified time to miss on modified model to reload new metadatas
-//$key = md5($fileinfo->getMTime() . $fileinfo->getPathname());
 
 class AnnotationParser {
 
@@ -38,6 +38,9 @@ class AnnotationParser {
 
     /** @var string[] */
     private $ignoreTags = [];
+
+    /** @var CacheItemPoolInterface */
+    private $cache;
 
     public function __construct(
             ?AnnotationProcessorDispatcher $processorDispatcher = null,
@@ -102,7 +105,11 @@ class AnnotationParser {
      * @return AnnotationInterface[]
      */
     public function parseClass(ReflectionClass $reflector, bool $classParents = false): array {
-
+        $cacheEnabled = false;
+        if ($item = $this->getCacheItem($reflector, $classParents)) {
+            if ($item->isHit()) return $item->get();
+            $cacheEnabled = true;
+        }
 
         $collection = [];
 
@@ -116,7 +123,13 @@ class AnnotationParser {
         foreach ($reflectors as $r) {
             $collection = array_merge($collection, $this->singleDocCommentParser($r));
         }
-        return $this->process($collection);
+        $result = $this->process($collection);
+
+        if ($cacheEnabled) {
+            $item->set($result);
+            $this->saveCacheItem($item);
+        }
+        return $result;
     }
 
     /**
@@ -152,6 +165,86 @@ class AnnotationParser {
     }
 
     /**
+     * Get Extended Classes
+     * @param ReflectionClass $reflector
+     * @return array
+     * @suppress PhanPossiblyInfiniteLoop
+     */
+    public function getClassParents(\ReflectionClass $reflector): array {
+        $result = [];
+        try {
+            do {
+                $result[] = $reflector;
+            } while (($reflector = $reflector->getParentClass()) !== false);
+        } catch (ReflectionException $error) { $error->getCode(); }
+        return $result;
+    }
+
+    /**
+     * Set Cache Pool
+     * @param CacheItemPoolInterface $cache
+     * @param int|null $ttl
+     * @return self
+     */
+    public function setCache(CacheItemPoolInterface $cache, ?int $ttl = null): self {
+        $this->cache = new Utils\Cache($cache, $ttl);
+        return $this;
+    }
+
+    /**
+     * Checks if Reflector is valid
+     * @param mixed $reflector
+     */
+    private function assertValidReflector($reflector) {
+
+        if (
+                !($reflector instanceof ReflectionClass)
+                and!($reflector instanceof ReflectionMethod)
+                and!($reflector instanceof ReflectionProperty)
+        ) throw new InvalidArgumentException('Invalid Reflector Provided.');
+    }
+
+    /**
+     * Get parsed annotations cached version
+     * @param ReflectionClass $reflector
+     * @param bool $classParents
+     * @return CacheItemInterface|null
+     */
+    private function getCacheItem(ReflectionClass $reflector, bool $classParents): ?CacheItemInterface {
+        if (!$this->cache instanceof CacheItemPoolInterface) return null;
+
+        $key = 'annotations';
+        $classes = [$reflector];
+        if ($classParents) $classes = $this->getClassParents($reflector);
+
+        foreach ($classes as $classReflector) {
+            $filename = $classReflector->getFileName();
+            $fileinfo = new SplFileInfo($filename);
+            $key .= $fileinfo->getMTime() . $fileinfo->getPathname();
+        }
+        $key = md5($key);
+        return $this->cache->getItem($key);
+    }
+
+    private function saveCacheItem(CacheItemInterface $item): bool {
+
+        return $this->cache->save($item);
+    }
+
+    /**
+     * Get FileName for Reflector
+     * @param ReflectionClass|ReflectionProperty|ReflectionMethod $reflector
+     */
+    private function getFileName($reflector) {
+
+        $this->assertValidReflector($reflector);
+        if ($reflector instanceof ReflectionProperty or $reflector instanceof ReflectionMethod) {
+            $reflector = new ReflectionClass($this->getClassName());
+        }
+        if ($reflector instanceof ReflectionClass) return $reflector->getFileName();
+    }
+
+    /**
      * Parse Using Reflector
      * @param ReflectionClass|ReflectionProperty|ReflectionMethod $reflector Must implements getDocComment method
      * @return AnnotationInterface[]
@@ -174,22 +267,6 @@ class AnnotationParser {
         }
 
         return $collection;
-    }
-
-    /**
-     * Get Extended Classes
-     * @param ReflectionClass $reflector
-     * @return array
-     * @suppress PhanPossiblyInfiniteLoop
-     */
-    public function getClassParents(\ReflectionClass $reflector): array {
-        $result = [];
-        try {
-            do {
-                $result[] = $reflector;
-            } while (($reflector = $reflector->getParentClass()) !== false);
-        } catch (ReflectionException $error) { $error->getCode(); }
-        return $result;
     }
 
     /**

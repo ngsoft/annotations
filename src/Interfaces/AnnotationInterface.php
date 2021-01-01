@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace NGSOFT\Interfaces;
 
-use ReflectionClass,
+use JsonSerializable,
+    ReflectionClass,
     ReflectionMethod,
-    ReflectionProperty;
+    ReflectionProperty,
+    Serializable;
 
-interface AnnotationInterface {
+interface AnnotationInterface extends Serializable, JsonSerializable {
 
     const ANNOTATION_TYPE_CLASS = "CLASS";
     const ANNOTATION_TYPE_PROPERTY = "PROPERTY";
