@@ -68,7 +68,7 @@ class AnnotationBasic implements AnnotationInterface {
                 or $reflector instanceof ReflectionClassConstant
         ) {
             $this->className = $reflector->class;
-            $this->fileName = (new \ReflectionClass($reflector->class))->getFileName();
+            $this->fileName = (new ReflectionClass($reflector->class))->getFileName();
         }
     }
 

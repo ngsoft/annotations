@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace NGSOFT\Interfaces;
 
-interface AnnotationTagInterface extends \Serializable, \JsonSerializable {
+use InvalidArgumentException,
+    JsonSerializable,
+    Serializable;
+
+interface AnnotationTagInterface extends Serializable, JsonSerializable {
+
+    const VALID_TAG_NAME_REGEX = '/^[a-z][\w\-]+$/i';
 
     /**
      * Get Annotation Tag Name
@@ -19,8 +25,16 @@ interface AnnotationTagInterface extends \Serializable, \JsonSerializable {
     public function getValue();
 
     /**
-     *
-     * @param type $value
+     * Returns a new instance with given tag name
+     * @param string $name
+     * @return AnnotationTagInterface
+     * @throws InvalidArgumentException on invalid name
+     */
+    public function withName(string $name): AnnotationTagInterface;
+
+    /**
+     * Returns a new Instance with given tag value
+     * @param mixed $value
      * @return AnnotationTagInterface
      */
     public function withValue($value): AnnotationTagInterface;
