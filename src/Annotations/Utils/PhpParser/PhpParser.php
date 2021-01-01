@@ -7,7 +7,6 @@ namespace NGSOFT\Annotations\Utils\PhpParser;
 use ReflectionClass,
     SplFileObject;
 use function is_file,
-             method_exists,
              preg_quote,
              preg_replace;
 
@@ -24,9 +23,6 @@ final class PhpParser {
      * @return array<string, class-string> A list with use statements in the form (Alias => FQN).
      */
     public function parseClass(ReflectionClass $class) {
-        if (method_exists($class, 'getUseStatements')) {
-            return $class->getUseStatements();
-        }
 
         $filename = $class->getFileName();
 

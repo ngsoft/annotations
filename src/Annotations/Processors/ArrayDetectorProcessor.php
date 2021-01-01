@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Processors;
 
 use JsonException;
-use NGSOFT\Interfaces\{
-    AnnotationHandlerInterface, AnnotationInterface, AnnotationProcessorInterface
+use NGSOFT\{
+    Exceptions\AnnotationException, Interfaces\AnnotationHandlerInterface, Interfaces\AnnotationInterface,
+    Interfaces\AnnotationProcessorInterface
 };
-use RuntimeException;
 use function mb_strpos;
 
 class ArrayDetectorProcessor implements AnnotationProcessorInterface {
@@ -115,7 +115,8 @@ class ArrayDetectorProcessor implements AnnotationProcessorInterface {
             $output = $this->parseList($input);
 
             if (count($output) > 0) {
-                $annotation = $annotation->withValue($output);
+                if (count($output) === 1 and array_key_exists(0, $output)) $annotation = $annotation->withValue($output[0]);
+                else $annotation = $annotation->withValue($output);
 
                 var_dump($annotation);
             } else throw new AnnotationException($annotation);

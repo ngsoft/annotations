@@ -92,7 +92,7 @@ class TokenParser {
 
     /**
      * Parses a single use statement.
-     *
+     * @suppress PhanUndeclaredConstant
      * @return array<string, string> A list with all found class names for a use statement.
      */
     public function parseUseStatement() {
@@ -172,7 +172,7 @@ class TokenParser {
 
     /**
      * Gets the namespace.
-     *
+     * @suppress PhanUndeclaredConstant
      * @return string The found namespace.
      */
     public function parseNamespace() {

@@ -12,9 +12,16 @@ use ReflectionClass,
     ReflectionException,
     ReflectionMethod,
     ReflectionProperty;
-use function mb_strlen,
+use function mb_internal_encoding,
+             mb_strlen,
              mb_strpos,
              mb_substr;
+
+mb_internal_encoding("UTF-8");
+
+//$fileinfo = new SplFileInfo($refl->getFileName());
+//using modified time to miss on modified model to reload new metadatas
+//$key = md5($fileinfo->getMTime() . $fileinfo->getPathname());
 
 class AnnotationParser {
 
