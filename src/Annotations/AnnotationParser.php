@@ -21,8 +21,6 @@ use function mb_internal_encoding,
              mb_strpos,
              mb_substr;
 
-mb_internal_encoding("UTF-8");
-
 class AnnotationParser {
 
     const VERSION = '1.0';

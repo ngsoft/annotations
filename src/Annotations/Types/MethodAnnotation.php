@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace NGSOFT\Annotations\Types;
 
-use NGSOFT\Annotations\Utils\AnnotationAbstract,
-    ReflectionMethod;
+use ReflectionMethod;
 
-class MethodAnnotation extends AnnotationAbstract {
+class MethodAnnotation extends AnnotationBasic {
 
     /** @var ReflectionMethod */
     protected $reflector;
@@ -15,16 +14,6 @@ class MethodAnnotation extends AnnotationAbstract {
     /** @return ReflectionMethod */
     public function getReflector() {
         return $this->reflector;
-    }
-
-    /** {@inheritdoc} */
-    public function getType(): string {
-        return self::ANNOTATION_TYPE_METHOD;
-    }
-
-    /** {@inheritdoc} */
-    protected function setReflector($reflector) {
-        $this->reflector = $reflector;
     }
 
 }

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace NGSOFT\Annotations\Types;
 
-use ReflectionProperty;
+use ReflectionClassConstant;
 
-class PropertyAnnotation extends AnnotationAbstract {
+class ConstantAnnotation extends AnnotationBasic {
 
-    /** @var ReflectionProperty */
+    /** @var ReflectionClassConstant */
     protected $reflector;
 
-    /** @return ReflectionProperty */
+    /** @return ReflectionClassConstant */
     public function getReflector() {
         return $this->reflector;
     }

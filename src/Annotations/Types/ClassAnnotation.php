@@ -6,7 +6,7 @@ namespace NGSOFT\Annotations\Types;
 
 use ReflectionClass;
 
-class ClassAnnotation extends AnnotationAbstract {
+class ClassAnnotation extends AnnotationBasic {
 
     /** @var ReflectionClass */
     protected $reflector;
@@ -19,11 +19,6 @@ class ClassAnnotation extends AnnotationAbstract {
     /** {@inheritdoc} */
     public function getType(): string {
         return self::ANNOTATION_TYPE_CLASS;
-    }
-
-    /** {@inheritdoc} */
-    protected function setReflector($reflector) {
-        $this->reflector = $reflector;
     }
 
 }
