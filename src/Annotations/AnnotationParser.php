@@ -223,6 +223,11 @@ class AnnotationParser {
         return $this->cache->getItem($key);
     }
 
+    /**
+     * Save to cache
+     * @param CacheItemInterface $item
+     * @return bool
+     */
     private function saveCacheItem(CacheItemInterface $item): bool {
 
         return $this->cache->save($item);

@@ -15,11 +15,11 @@ interface AnnotationFactoryInterface {
     /**
      * Creates a new Annotation
      * @param ReflectionClass|ReflectionProperty|ReflectionMethod|ReflectionClassConstant $reflector
-     * @param AnnotationTagInterface $tag
+     * @param TagInterface $tag
      * @return AnnotationInterface
      * @throws InvalidArgumentException if invalid reflector
      */
-    public function createAnnotation($reflector, AnnotationTagInterface $tag): AnnotationInterface;
+    public function createAnnotation($reflector, TagInterface $tag): AnnotationInterface;
 
     /**
      * Creates a new Tag

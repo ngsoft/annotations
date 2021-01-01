@@ -47,7 +47,7 @@ interface AnnotationInterface extends Serializable, JsonSerializable {
      * @param AnnotationTagInterface $tag
      * @return AnnotationInterface
      */
-    public function withTag(AnnotationTagInterface $tag): AnnotationInterface;
+    public function withTag(TagInterface $tag): AnnotationInterface;
 
     /**
      * Returns a new instance with the given tag value
@@ -63,9 +63,9 @@ interface AnnotationInterface extends Serializable, JsonSerializable {
 
     /**
      * Gat the AnnotationTagInterface instance
-     * @return AnnotationTagInterface
+     * @return TagInterface
      */
-    public function getTag(): AnnotationTagInterface;
+    public function getTag(): TagInterface;
 
     /**
      * Get Annotation Type (as defined ANNOTATION_TYPE_*)

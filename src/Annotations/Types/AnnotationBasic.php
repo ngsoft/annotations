@@ -16,7 +16,7 @@ use ReflectionClass,
 
 class AnnotationBasic implements AnnotationInterface {
 
-    /** @var AnnotationTagInterface */
+    /** @var TagInterface */
     protected $tag;
 
     /** @var string */
@@ -55,7 +55,7 @@ class AnnotationBasic implements AnnotationInterface {
      * @param string $tag
      * @param mixed $value
      */
-    public function __construct($reflector, AnnotationTagInterface $tag) {
+    public function __construct($reflector, TagInterface $tag) {
         $this->assertValidReflection($reflector);
         $this->reflector = $reflector;
         $this->tag = $tag;
@@ -95,7 +95,7 @@ class AnnotationBasic implements AnnotationInterface {
     }
 
     /** {@inheritdoc} */
-    public function getTag(): AnnotationTagInterface {
+    public function getTag(): TagInterface {
         return $this->tag;
     }
 

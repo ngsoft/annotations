@@ -8,7 +8,7 @@ use InvalidArgumentException;
 use NGSOFT\{
     Annotations\Tags\TagBasic, Annotations\Types\AnnotationBasic, Annotations\Types\ClassAnnotation,
     Annotations\Types\ConstantAnnotation, Annotations\Types\MethodAnnotation, Annotations\Types\PropertyAnnotation,
-    Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface, Interfaces\AnnotationTagInterface
+    Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface, Interfaces\TagInterface
 };
 use ReflectionClass,
     ReflectionClassConstant,
@@ -34,23 +34,23 @@ class AnnotationFactory implements AnnotationFactoryInterface {
     /**
      * Add a custom Tag
      * @param string $tagName
-     * @param string|AnnotationTagInterface $tagClass
+     * @param string|TagInterface $tagClass
      * @return self
      * @throws InvalidArgumentException
      */
     public function addTagName(string $tagName, $tagClass): self {
 
-        if (!preg_match(AnnotationTagInterface::VALID_TAG_NAME_REGEX, $tagName)) {
+        if (!preg_match(TagInterface::VALID_TAG_NAME_REGEX, $tagName)) {
             throw new InvalidArgumentException(sprintf('Invalid tag name "%s".', $tagName));
         }
 
-        if ($tagClass instanceof AnnotationTagInterface) $tagClass = get_class($tagClass);
+        if ($tagClass instanceof TagInterface) $tagClass = get_class($tagClass);
 
         if (
                 is_string($tagClass)
                 and class_exists($tagClass)
                 and ($implements = class_implements($tagClass))
-                and in_array(AnnotationTagInterface::class, $implements)
+                and in_array(TagInterface::class, $implements)
         ) {
 
             $this->tagClasses[$tagName] = $tagClass;
@@ -77,7 +77,7 @@ class AnnotationFactory implements AnnotationFactoryInterface {
     }
 
     /** {@inheritdoc} */
-    public function createAnnotation($reflector, AnnotationTagInterface $tag): AnnotationInterface {
+    public function createAnnotation($reflector, TagInterface $tag): AnnotationInterface {
         $this->assertValidReflection($reflector);
         $reflectorClass = get_class($reflector);
         $annotationClass = $this->annotationClasses[$reflectorClass] ?? AnnotationBasic::class;
@@ -85,10 +85,7 @@ class AnnotationFactory implements AnnotationFactoryInterface {
     }
 
     /** {@inheritdoc} */
-    public function createTag(string $name, $value = null): AnnotationTagInterface {
-        if (!preg_match(AnnotationTagInterface::VALID_TAG_NAME_REGEX, $name)) {
-            throw new InvalidArgumentException(sprintf('Invalid tag name "%s".', $name));
-        }
+    public function createTag(string $name, $value = null): TagInterface {
         $className = $this->tagClasses[$name] ?? $this->defaultTagClass;
         return (new $className())
                         ->withName($name)

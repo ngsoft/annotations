@@ -5,23 +5,23 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations;
 
 use NGSOFT\{
-    Annotations\Utils\NullHandler, Annotations\Utils\ProcessorHandler, Interfaces\AnnotationHandlerInterface,
-    Interfaces\AnnotationInterface, Interfaces\AnnotationProcessorInterface
+    Annotations\Processors\ArrayDetectorProcessor, Annotations\Utils\NullHandler, Annotations\Utils\ProcessorHandler,
+    Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 use RuntimeException;
 
-class AnnotationProcessorDispatcher {
+class TagProcessorDispatcher {
 
     const DEFAULT_PROCESSORS = [
         // to run first (Last position)
-        Processors\ArrayDetectorProcessor::class
+        ArrayDetectorProcessor::class
     ];
 
-    /** @var AnnotationHandlerInterface */
+    /** @var TagHandlerInterface */
     private $stack;
 
     /**
-     * @param AnnotationProcessorInterface[]|null $processors
+     * @param TagProcessorInterface[]|null $processors
      * @throws RuntimeException
      */
     public function __construct(
@@ -31,7 +31,7 @@ class AnnotationProcessorDispatcher {
         if (!is_array($processors)) $processors = array_map(fn($classname) => new $classname(), self::DEFAULT_PROCESSORS);
         foreach ($processors as $processor) {
             if (
-                    !($processor instanceof AnnotationProcessorInterface)
+                    !($processor instanceof TagProcessorInterface)
             ) throw new RuntimeException('Invalid AnnotationProcessor.');
             $this->addProcessor($processor);
         }
@@ -43,11 +43,12 @@ class AnnotationProcessorDispatcher {
      * @return AnnotationInterface
      */
     public function handle(AnnotationInterface $annotation): AnnotationInterface {
-        return $this->stack->handle($annotation);
+        $tag = $this->stack->handle($annotation);
+        return $annotation->withTag($tag);
     }
 
     /** {@inheritdoc} */
-    public function addProcessor(AnnotationProcessorInterface $processor): AnnotationProcessorDispatcher {
+    public function addProcessor(TagProcessorInterface $processor): TagProcessorDispatcher {
         $next = $this->stack;
         $this->stack = new ProcessorHandler($processor, $next);
 

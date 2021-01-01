@@ -5,23 +5,24 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Utils;
 
 use NGSOFT\Interfaces\{
-    AnnotationHandlerInterface, AnnotationInterface, AnnotationProcessorInterface
+    AnnotationInterface, TagHandlerInterface, TagInterface, TagProcessorInterface
 };
 
-class ProcessorHandler implements AnnotationHandlerInterface {
+class ProcessorHandler implements TagHandlerInterface {
 
-    /** @var AnnotationProcessorInterface */
+    /** @var TagProcessorInterface */
     private $processor;
 
-    /** @var AnnotationHandlerInterface */
+    /** @var TagHandlerInterface */
     private $next;
 
-    public function __construct(AnnotationProcessorInterface $processor, AnnotationHandlerInterface $next) {
+    public function __construct(TagProcessorInterface $processor, TagHandlerInterface $next) {
         $this->processor = $processor;
         $this->next = $next;
     }
 
-    public function handle(AnnotationInterface $annotation): AnnotationInterface {
+    /** {@inheritdoc} */
+    public function handle(AnnotationInterface $annotation): TagInterface {
         return $this->processor->process($annotation, $this->next);
     }
 
