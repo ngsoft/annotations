@@ -36,6 +36,17 @@ abstract class AnnotationAbstract implements AnnotationInterface {
     }
 
     /** {@inheritdoc} */
+    public function getFileName(): string {
+
+        $reflector = $this->getReflector();
+        if ($reflector instanceof ReflectionProperty or $reflector instanceof ReflectionMethod) {
+            $reflector = new ReflectionClass($this->getClassName());
+        }
+        if ($reflector instanceof ReflectionClass) return $reflector->getFileName();
+        else throw new RuntimeException('Invalid Reflector Provided.');
+    }
+
+    /** {@inheritdoc} */
     public function getName(): string {
         return $this->getReflector()->getName();
     }

@@ -12,7 +12,10 @@ use RuntimeException;
 
 class AnnotationProcessorDispatcher {
 
-    const DEFAULT_PROCESSORS = [];
+    const DEFAULT_PROCESSORS = [
+        // to run first (Last position)
+        Processors\ArrayDetectorProcessor::class
+    ];
 
     /** @var AnnotationHandlerInterface */
     private $stack;

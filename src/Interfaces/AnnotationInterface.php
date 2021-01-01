@@ -51,6 +51,12 @@ interface AnnotationInterface {
     public function getReflector();
 
     /**
+     * Get the filename linked to the annotation
+     * @return string
+     */
+    public function getFileName(): string;
+
+    /**
      * Returns a new instance with specified value
      * @param mixed $value
      * @return AnnotationInterface
