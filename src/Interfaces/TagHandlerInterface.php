@@ -8,8 +8,8 @@ interface TagHandlerInterface {
 
     /**
      * Handles Next Filter
-     * @param TagInterface $annotation
+     * @param AnnotationInterface $annotation
      * @return TagInterface
      */
-    public function handle(TagInterface $annotation): TagInterface;
+    public function handle(AnnotationInterface $annotation): TagInterface;
 }

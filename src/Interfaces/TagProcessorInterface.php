@@ -11,9 +11,9 @@ interface TagProcessorInterface {
     /**
      * Process Tag
      * @param AnnotationInterface $annotation
-     * @param AnnotationHandlerInterface $handler
-     * @return AnnotationInterface
+     * @param TagHandlerInterface $handler
+     * @return TagInterface
      * @throws AnnotationException on Error
      */
-    public function process(AnnotationTagInterface $annotation, AnnotationHandlerInterface $handler): AnnotationInterface;
+    public function process(AnnotationInterface $annotation, TagHandlerInterface $handler): TagInterface;
 }
