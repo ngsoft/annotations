@@ -31,7 +31,6 @@ class AnnotationFactory implements AnnotationFactoryInterface {
         'var' => TagProperty::class,
         'return' => TagProperty::class,
         'param' => TagProperty::class,
-        'method' => TagProperty::class,
         'property' => TagProperty::class,
         'property-read' => TagProperty::class,
         'property-write' => TagProperty::class,
