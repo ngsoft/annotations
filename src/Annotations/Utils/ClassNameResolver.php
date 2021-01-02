@@ -22,8 +22,14 @@ final class ClassNameResolver {
      */
     const RESERVED_KEYWORDS = [
         'boolean', 'integer', 'double', 'string', 'array', 'object', 'resource', 'NULL',
-        'bool', 'int', 'float', 'void', 'iterable', 'null',
-        'mixed', 'static', 'self', 'callable'
+        'bool', 'int', 'float', 'void', 'iterable', 'null', 'mixed', 'callable'
+    ];
+
+    /**
+     * PHP Doc Reserved Words that will returns the class name
+     */
+    const SELF_KEYWORDS = [
+        '$this', 'static', 'self'
     ];
 
     /**
@@ -63,13 +69,18 @@ final class ClassNameResolver {
      */
     public function resolveClassName(ReflectionClass $reflector, string $toresolve): ?string {
 
-        $toresolve = preg_replace('/^\?+/', '', $toresolve);
+        $toresolve = preg_replace('/^\?+/', '', $toresolve); //removes heading ?
+        $toresolve = trim($toresolve);
 
         if (
                 in_array($toresolve, self::RESERVED_KEYWORDS) // case sensitive
                 or in_array(mb_strtolower($toresolve), self::RESERVED_KEYWORDS) // case insensitive
                 or $this->classExists($toresolve) // class that can be resolved
         ) return $toresolve;
+
+        // static or self
+        if (in_array($toresolve, self::SELF_KEYWORDS)) return $reflector->getName();
+
 
         //resolves class in the same namespace
         $output = sprintf('%s\\%s', $reflector->getNamespaceName(), $toresolve);

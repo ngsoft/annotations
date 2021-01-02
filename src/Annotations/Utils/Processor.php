@@ -52,6 +52,7 @@ abstract class Processor implements TagProcessorInterface {
         return false;
     }
 
+    /** {@inheritdoc} */
     public function setIgnoreErrors(bool $ignoreErrors): TagProcessorInterface {
 
         $this->ignoreErrors = $ignoreErrors;

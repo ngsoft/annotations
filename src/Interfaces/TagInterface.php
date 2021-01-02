@@ -40,6 +40,12 @@ interface TagInterface extends Serializable, JsonSerializable {
     public function getAttribute(): string;
 
     /**
+     * Checks if tag has an attribute
+     * @return bool
+     */
+    public function hasAttribute(): bool;
+
+    /**
      * Get Params for Attribute
      * @return array
      */

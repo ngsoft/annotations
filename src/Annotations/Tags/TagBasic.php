@@ -23,7 +23,7 @@ class TagBasic implements TagInterface {
     /** @var string */
     protected $attribute = '';
 
-    /** @var array<string,string|string[]|null> */
+    /** @var array<string,string[]|null> */
     protected $params = [];
 
     /** {@inheritdoc} */
@@ -39,6 +39,11 @@ class TagBasic implements TagInterface {
     /** {@inheritdoc} */
     public function getAttribute(): string {
         return $this->attribute;
+    }
+
+    /** {@inheritdoc} */
+    public function hasAttribute(): bool {
+        return !empty($this->attribute);
     }
 
     /** {@inheritdoc} */

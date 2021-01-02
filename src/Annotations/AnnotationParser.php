@@ -36,7 +36,7 @@ class AnnotationParser {
     /** @var AnnotationFactoryInterface */
     private $annotationFactory;
 
-    /** @var TagProcessorDispatcher */
+    /** @var Dispatcher */
     private $processorDispatcher;
 
     /** @var string[] */
@@ -46,14 +46,14 @@ class AnnotationParser {
     private $cache;
 
     public function __construct(
-            ?TagProcessorDispatcher $processorDispatcher = null,
+            ?Dispatcher $processorDispatcher = null,
             ?AnnotationFactoryInterface $annotationFactory = null
     ) {
         $this->ignoreTags = self::DEFAULT_IGNORE_TAGS;
         if ($annotationFactory instanceof AnnotationFactoryInterface) $this->annotationFactory = $annotationFactory;
         $this->annotationFactory = new AnnotationFactory();
-        if ($processorDispatcher instanceof TagProcessorDispatcher) $this->processorDispatcher = $processorDispatcher;
-        else $this->processorDispatcher = new TagProcessorDispatcher();
+        if ($processorDispatcher instanceof Dispatcher) $this->processorDispatcher = $processorDispatcher;
+        else $this->processorDispatcher = new Dispatcher();
     }
 
     /**
