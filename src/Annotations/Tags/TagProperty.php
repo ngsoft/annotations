@@ -16,13 +16,34 @@ class TagProperty extends TagBasic {
     const VALID_ATTRIBUTE_REGEX = '/^[a-z]\w+$/i';
 
     /** @var string */
-    protected $attributeName = '';
+    protected $attribute = '';
+
+    /** @var array<string,string|string[]> */
+    protected $params = [];
+
+    /**
+     * Get Params for Attribute
+     * @return array<string,string|string[]>
+     */
+    public function getParams(): array {
+        return $this->params;
+    }
+
+    /**
+     * Creates a new instance with given params
+     * @return static
+     */
+    public function withParams(array $params): self {
+        $clone = clone $this;
+        $clone->params = $params;
+        return $clone;
+    }
 
     /**
      * Get then Named Attribute
      * @return string
      */
-    public function getAttributeName(): string {
+    public function getAttribute(): string {
         return $this->attributeName;
     }
 
@@ -32,7 +53,7 @@ class TagProperty extends TagBasic {
      * @return static
      * @throws InvalidArgumentException
      */
-    public function withAttributeName(string $attributeName): self {
+    public function withAttribute(string $attributeName): self {
         if (
                 !empty($attributeName)
                 and!preg_match(self::VALID_ATTRIBUTE_REGEX, $attributeName)
@@ -40,17 +61,17 @@ class TagProperty extends TagBasic {
             throw new InvalidArgumentException(sprintf('Attribute name "%s" invalid.', $attributeName));
         }
         $clone = clone $this;
-        $clone->attributeName = $attributeName;
+        $clone->attribute = $attributeName;
         return $clone;
     }
 
     /** {@inheritdoc} */
     public function jsonSerialize() {
-        return [
-            'name' => $this->name,
-            'value' => $this->value,
-            'attribute' => $this->attributeName,
-        ];
+
+        return array_merge(parent::jsonSerialize(), [
+            'attribute' => $this->attribute,
+            'params' => $this->params,
+        ]);
     }
 
     /** {@inheritdoc} */
@@ -59,7 +80,8 @@ class TagProperty extends TagBasic {
         if (!is_array($array)) throw new RuntimeException('Cannot unserialize, invalid value');
         $this->name = $array['name'];
         $this->value = $array['value'];
-        $this->attributeName = $array['attribute'];
+        $this->attribute = $array['attribute'];
+        $this->params = $array['params'];
     }
 
 }

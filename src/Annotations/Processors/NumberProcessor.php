@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Processors;
 
 use NGSOFT\{
-    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\ProcessorTrait, Interfaces\AnnotationInterface,
+    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\Processor, Interfaces\AnnotationInterface,
     Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 use function mb_strpos;
 
-class NumberProcessor implements TagProcessorInterface {
-
-    use ProcessorTrait;
+class NumberProcessor extends Processor implements TagProcessorInterface {
 
     public function __construct() {
         $this
@@ -24,7 +22,10 @@ class NumberProcessor implements TagProcessorInterface {
 
         $tag = $annotation->getTag();
 
-        if (!$this->isIgnored($tag)) {
+        if (
+                !$this->isIgnored($tag)
+                and is_string($tag->getValue())
+        ) {
             if (preg_match('/^\-?[\d\.]+$/', $tag->getValue())) {
                 if (mb_strpos($tag->getValue(), '.') !== false) return $tag->withValue(floatval($tag->getValue()));
                 else return $tag->withValue(intval($tag->getValue()));

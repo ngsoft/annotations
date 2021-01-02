@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace NGSOFT\Annotations\Utils;
 
-use InvalidArgumentException,
-    NGSOFT\Interfaces\TagInterface;
+use InvalidArgumentException;
+use NGSOFT\Interfaces\{
+    TagInterface, TagProcessorInterface
+};
 
 /**
  * Toolkit for Processors
  */
-trait ProcessorTrait {
+abstract class Processor implements TagProcessorInterface {
 
     /** @var string[] */
     protected $ignoreTagClasses = [];
@@ -50,20 +52,13 @@ trait ProcessorTrait {
         return false;
     }
 
-    /**
-     * Set Ignore Errors Flag
-     * @param bool $ignoreErrors if set to true Processor will not throw exception on error, it will pass
-     * @return static
-     */
-    public function setIgnoreErrors(bool $ignoreErrors): self {
+    public function setIgnoreErrors(bool $ignoreErrors): TagProcessorInterface {
+
         $this->ignoreErrors = $ignoreErrors;
         return $this;
     }
 
-    /**
-     * Get Ignore Errors Flag
-     * @return bool
-     */
+    /** {@inheritdoc} */
     public function getIgnoreErrors(): bool {
         return $this->ignoreErrors;
     }

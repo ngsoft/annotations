@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Processors;
 
 use NGSOFT\{
-    Annotations\Tags\TagProperty, Annotations\Utils\ClassNameResolver, Annotations\Utils\ProcessorTrait,
-    Exceptions\AnnotationException, Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface, Interfaces\TagInterface,
-    Interfaces\TagProcessorInterface
+    Annotations\Tags\TagProperty, Annotations\Utils\ClassNameResolver, Annotations\Utils\Processor, Exceptions\AnnotationException,
+    Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 use function mb_strpos,
              mb_substr;
@@ -15,15 +14,47 @@ use function mb_strpos,
 /**
  * Type Hint \NGSOFT\Annotations\Tags\TagProperty
  */
-class TypeHintingProcessor implements TagProcessorInterface {
-
-    use ProcessorTrait;
+class TypeHintingProcessor extends Processor implements TagProcessorInterface {
 
     /** @var ClassNameResolver */
-    protected $resolver;
+    protected $classNameResolver;
+
+    /** @var ListProcessor */
+    protected $listProcessor;
 
     public function __construct() {
-        $this->resolver = new ClassNameResolver();
+        $this->classNameResolver = new ClassNameResolver();
+        $this->listProcessor = new ListProcessor();
+    }
+
+    /**
+     * Resolve Hint (?ClassName|callable|null)
+     * @param AnnotationInterface $annotation
+     * @param string $hint
+     * @return string[]|null
+     * @throws AnnotationException
+     * @suppress PhanUnusedVariable
+     */
+    public function resolveHint(AnnotationInterface $annotation, string $hint): ?array {
+
+        $types = explode('|', $hint);
+        $result = [];
+
+        foreach ($types as $type) {
+            $type = $toresolve = trim($type);
+            $suffix = '';
+            if (
+                    ($pos = mb_strpos($type, '<')) !== false
+                    or ($pos = mb_strpos($type, '[')) !== false
+            ) {
+                $toresolve = mb_substr($type, 0, $pos);
+                $suffix = mb_substr($type, $pos);
+            }
+            if ($resolved = $this->classNameResolver->resolve($annotation, $toresolve)) {
+                $result[] = $resolved . $suffix;
+            } else return null;
+        }
+        return $result;
     }
 
     /**
@@ -36,40 +67,62 @@ class TypeHintingProcessor implements TagProcessorInterface {
 
         if (
                 !$this->isIgnored($tag)
+                and is_string($tag->getValue())
                 and $tag instanceof TagProperty
         ) {
 
             $input = $tag->getValue();
 
+            // @method values|value2 functionName(?attr $varname)
+            if (preg_match('/^\??(\S+)\h+(\w+)\h*\((.*)\)/', $input, $matches) > 0) {
+
+                list(, $hint, $method, $args) = $matches;
+
+                //handle hint
+                if ($types = $this->resolveHint($annotation, $hint)) {
+                    $tag = $tag->withValue($types);
+                    //handle method
+                } elseif (!$this->getIgnoreErrors()) throw new AnnotationException($annotation);
+                else return $tag->withValue(null);
+
+
+
+
+
+
+                var_dump($matches);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                return $handler->handle($annotation);
+            }
+
             // @param value1|value2 [$varname] ignored
-            if (preg_match('/^(\S+)(?:\h+\$(\w+))?\h*/', $input, $matches) > 0) {
-                $result = [];
-
+            elseif (preg_match('/^\??(\S+)(?:\h+\$(\w+))?\h*/', $input, $matches) > 0) {
                 $name = '';
-                if (count($matches) > 2) list(, $types, $name) = $matches;
-                else list(, $types) = $matches;
+                if (count($matches) > 2) list(, $hint, $name) = $matches;
+                else list(, $hint) = $matches;
 
-                $types = explode('|', $types);
-
-                foreach ($types as $type) {
-                    $type = $toresolve = trim($type);
-                    $suffix = '';
-                    if (
-                            ($pos = mb_strpos($type, '<')) !== false
-                            or ($pos = mb_strpos($type, '[')) !== false
-                    ) {
-                        $toresolve = mb_substr($type, 0, $pos);
-                        $suffix = mb_substr($type, $pos);
-                    }
-                    if ($resolved = $this->resolver->resolve($annotation, $toresolve)) {
-                        $result[] = $resolved . $suffix;
-                    } elseif ($this->ignoreErrors) continue;
-                    else throw new AnnotationException($annotation);
-                }
-
-                if (count($result) == 1) $result = $result[0];
-
-                return $tag->withAttributeName($name)->withValue($result);
+                if ($result = $this->resolveHint($annotation, $hint)) {
+                    if (count($result) == 1) $result = $result[0];
+                    return $tag->withAttribute($name)->withValue($result);
+                } elseif (!$this->getIgnoreErrors()) throw new AnnotationException($annotation);
+                //empty array or null
+                return $tag->withValue(null);
             }
         }
 

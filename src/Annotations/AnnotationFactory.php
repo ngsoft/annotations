@@ -34,6 +34,7 @@ class AnnotationFactory implements AnnotationFactoryInterface {
         'property' => TagProperty::class,
         'property-read' => TagProperty::class,
         'property-write' => TagProperty::class,
+        'method' => TagProperty::class,
     ];
 
     /**
@@ -90,6 +91,7 @@ class AnnotationFactory implements AnnotationFactoryInterface {
 
     /** {@inheritdoc} */
     public function createTag(string $name, $value = null): TagInterface {
+
         $className = $this->tagClasses[$name] ?? $this->defaultTagClass;
         return (new $className())
                         ->withName($name)

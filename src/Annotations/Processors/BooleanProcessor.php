@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Processors;
 
 use NGSOFT\{
-    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\ProcessorTrait, Interfaces\AnnotationInterface,
+    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\Processor, Interfaces\AnnotationInterface,
     Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 
@@ -13,9 +13,7 @@ use NGSOFT\{
  * Handles single tags that don't have value (flags) or
  * have values like true on false off
  */
-class BooleanProcessor implements TagProcessorInterface {
-
-    use ProcessorTrait;
+class BooleanProcessor extends Processor implements TagProcessorInterface {
 
     public function __construct() {
         $this
@@ -28,7 +26,10 @@ class BooleanProcessor implements TagProcessorInterface {
 
         $tag = $annotation->getTag();
 
-        if (!$this->isIgnored($tag)) {
+        if (
+                !$this->isIgnored($tag)
+                and is_string($tag->getValue())
+        ) {
             if (in_array($tag->getValue(), ['', 'true', 'on'])) return $tag->withValue(true);
             elseif (in_array($tag->getValue(), ['false', 'off'])) return $tag->withValue(true);
         }

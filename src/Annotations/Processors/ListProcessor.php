@@ -6,21 +6,22 @@ namespace NGSOFT\Annotations\Processors;
 
 use JsonException;
 use NGSOFT\{
-    Annotations\AnnotationFactory, Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\ProcessorTrait,
-    Exceptions\AnnotationException, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface,
+    Annotations\AnnotationFactory, Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\ClassNameResolver,
+    Annotations\Utils\Processor, Exceptions\AnnotationException, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface,
     Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 use function mb_strpos;
 
-class ListProcessor implements TagProcessorInterface {
-
-    use ProcessorTrait;
+class ListProcessor extends Processor implements TagProcessorInterface {
 
     const DETECT_LIST_REGEX = '/^[\(](.*?)[\)]/';
     const DETECT_KEY_VALUE_PAIR = '/^[{](.*?)[}]/';
 
     /** @var AnnotationFactoryInterface */
     protected $annotationFactory;
+
+    /** @var ClassNameResolver */
+    protected $classNameResolver;
 
     /** @param AnnotationFactoryInterface|null $annotationFactory */
     public function __construct(
@@ -29,7 +30,7 @@ class ListProcessor implements TagProcessorInterface {
 
         if ($annotationFactory === null) $annotationFactory = new AnnotationFactory();
         $this->annotationFactory = $annotationFactory;
-
+        $this->classNameResolver = new ClassNameResolver();
         $this->addIgnoreTagClass(TagProperty::class);
     }
 
@@ -127,13 +128,26 @@ class ListProcessor implements TagProcessorInterface {
 
         if ($tag instanceof TagList) {
             if (is_array($tag->getValue())) return $tag;
-            $tagClass = get_class($tag); //tag extended
+            $tagClass = get_class($tag); //TagList or extended
         }
 
-        if (!$this->isIgnored($tag)) {
+
+        if (
+                !$this->isIgnored($tag)
+                and is_string($tag->getValue())
+        ) {
             $input = $tag->getValue();
             if ($this->isList($input)) {
                 $output = $this->parseList($input);
+                //resolve class name
+                foreach ($output as &$value) {
+                    if (
+                            is_string($value)
+                            and $className = $this->classNameResolver->resolve($annotation, $value)
+                    ) {
+                        $value = $className;
+                    }
+                }
                 if ($tag instanceof TagList) return $tag->withValue($output);
                 return (new $tagClass)
                                 ->withName($tag->getName())
@@ -141,6 +155,14 @@ class ListProcessor implements TagProcessorInterface {
             }
             //can be a custom class extending TagList so returns a resolved result
             if ($tag instanceof TagList) {
+                //resolve class name
+                if (
+                        is_string($tag->getValue())
+                        and $className = $this->classNameResolver->resolve($annotation, $tag->getValue())
+                ) {
+
+                    return $tag->withValue($className);
+                }
                 // resolve others
                 $tagToResolve = $this->annotationFactory->createTag($tag->getName(), $input); //creates basic tag so it isn't ignored by the other processors
                 $resolvedTag = $handler->handle($annotation->withTag($tagToResolve)); // use other processors

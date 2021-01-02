@@ -10,7 +10,16 @@ use InvalidArgumentException,
 
 interface TagInterface extends Serializable, JsonSerializable {
 
+    /**
+     * Tag Name
+     */
     const VALID_TAG_NAME_REGEX = '/^[a-z][\w\-]+$/i';
+
+    /**
+     * Attribute is a sub named parametter
+     * Can be a variable or a method name and can be empty string
+     */
+    const VALID_ATTRIBUTE_REGEX = '/^(|[a-z]\w+)$/i';
 
     /**
      * Get Annotation Tag Name
@@ -25,17 +34,44 @@ interface TagInterface extends Serializable, JsonSerializable {
     public function getValue();
 
     /**
+     * Get Attribute name
+     * @return string
+     */
+    public function getAttribute(): string;
+
+    /**
+     * Get Params for Attribute
+     * @return array<string,string|string[]>
+     */
+    public function getParams(): array;
+
+    /**
      * Returns a new instance with given tag name
      * @param string $name
      * @return TagInterface
      * @throws InvalidArgumentException on invalid name
      */
-    public function withName(string $name): TagInterface;
+    public function withName(string $name): self;
 
     /**
      * Returns a new Instance with given tag value
      * @param mixed $value
-     * @return TagInterface
+     * @return static
      */
-    public function withValue($value): TagInterface;
+    public function withValue($value): self;
+
+    /**
+     * Creates a new instance with given attribute
+     * @param string $attribute
+     * @return static
+     * @throws InvalidArgumentException if invalid attribute
+     */
+    public function withAttribute(string $attribute): self;
+
+    /**
+     * Creates a new instance with given params
+     * @param array<string,string|string[]> $params
+     * @return static
+     */
+    public function withParams(array $params): self;
 }

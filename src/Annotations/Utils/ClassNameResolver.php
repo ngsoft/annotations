@@ -21,10 +21,9 @@ final class ClassNameResolver {
      * PHP Doc Reserved Words that will be resolved as is
      */
     const RESERVED_KEYWORDS = [
-        //gettype
         'boolean', 'integer', 'double', 'string', 'array', 'object', 'resource', 'NULL',
-        //aliases
-        'bool', 'int', 'float', 'void', 'iterable', 'null', 'mixed', 'static', 'self'
+        'bool', 'int', 'float', 'void', 'iterable', 'null',
+        'mixed', 'static', 'self', 'callable'
     ];
 
     /**
@@ -63,6 +62,8 @@ final class ClassNameResolver {
      * @throws InvalidArgumentException
      */
     public function resolveClassName(ReflectionClass $reflector, string $toresolve): ?string {
+
+        $toresolve = preg_replace('/^\?+/', '', $toresolve);
 
         if (
                 in_array($toresolve, self::RESERVED_KEYWORDS) // case sensitive
