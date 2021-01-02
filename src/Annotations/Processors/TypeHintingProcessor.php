@@ -61,7 +61,7 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
      * Resolve Arguments (string $arg1, ?array $arg2)
      * @param AnnotationInterface $annotation
      * @param string $args
-     * @return array<string,string[]|null>|null
+     * @return array<string,string|string[]|null>|null
      */
     public function resolveArguments(AnnotationInterface $annotation, string $args): ?array {
 
@@ -81,6 +81,7 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
                 }
                 //handle hint
                 if ($types = $this->resolveHint($annotation, $hint)) {
+                    if (count($types) == 1) $types = $types[0];
                     $result[$name] = $types;
                 } else return null;
             }
@@ -108,7 +109,6 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
             if (preg_match('/^\??(\S+)\h+(\w+)\h*\((.*)\)/', $input, $matches) > 0) {
 
                 list(, $hint, $method, $args) = $matches;
-                // var_dump($matches);
                 //handle hint
                 if ($types = $this->resolveHint($annotation, $hint)) {
                     $tag = $tag->withAttribute($method)->withValue($types);
@@ -127,6 +127,7 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
                 else list(, $hint) = $matches;
 
                 if ($result = $this->resolveHint($annotation, $hint)) {
+                    if (count($result) == 1) $result = $result[0];
                     return $tag->withAttribute($name)->withValue($result);
                 } elseif (!$this->getIgnoreErrors()) throw new AnnotationException($annotation);
                 //empty array or null
