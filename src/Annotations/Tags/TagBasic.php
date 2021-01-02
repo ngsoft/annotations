@@ -20,14 +20,33 @@ class TagBasic implements TagInterface {
     /** @var mixed */
     protected $value = null;
 
+    /** @var string */
+    protected $attribute = '';
+
+    /** @var array<string,string|string[]> */
+    protected $params = [];
+
+    /** {@inheritdoc} */
     public function getName(): string {
         return $this->name;
     }
 
+    /** {@inheritdoc} */
     public function getValue() {
         return $this->value;
     }
 
+    /** {@inheritdoc} */
+    public function getAttribute(): string {
+        return $this->attribute;
+    }
+
+    /** {@inheritdoc} */
+    public function getParams(): array {
+        return $this->params;
+    }
+
+    /** {@inheritdoc} */
     public function withName(string $name): TagInterface {
         if (!preg_match(self::VALID_TAG_NAME_REGEX, $name)) {
             throw new InvalidArgumentException(sprintf('Invalid tag name "%s".', $name));
@@ -45,10 +64,32 @@ class TagBasic implements TagInterface {
     }
 
     /** {@inheritdoc} */
+    public function withAttribute(string $attribute): TagInterface {
+        if (
+                !preg_match(self::VALID_ATTRIBUTE_REGEX, $attribute)
+        ) {
+            throw new InvalidArgumentException(sprintf('Attribute "%s" invalid.', $attribute));
+        }
+
+        $clone = clone $this;
+        $clone->attribute = $attribute;
+        return $clone;
+    }
+
+    /** {@inheritdoc} */
+    public function withParams(array $params): TagInterface {
+        $clone = clone $this;
+        $clone->params = $params;
+        return $clone;
+    }
+
+    /** {@inheritdoc} */
     public function jsonSerialize() {
         return [
             'name' => $this->name,
-            'value' => $this->value
+            'value' => $this->value,
+            'attribute' => $this->attribute,
+            'params' => $this->params
         ];
     }
 
@@ -64,6 +105,8 @@ class TagBasic implements TagInterface {
         if (!is_array($array)) throw new RuntimeException('Cannot unserialize, invalid value');
         $this->name = $array['name'];
         $this->value = $array['value'];
+        $this->attribute = $array['attribute'];
+        $this->params = $array['params'];
     }
 
 }

@@ -16,7 +16,7 @@ interface TagInterface extends Serializable, JsonSerializable {
     const VALID_TAG_NAME_REGEX = '/^[a-z][\w\-]+$/i';
 
     /**
-     * Attribute is a sub named parametter
+     * Attribute is a sub named parameter
      * Can be a variable or a method name and can be empty string
      */
     const VALID_ATTRIBUTE_REGEX = '/^(|[a-z]\w+)$/i';
@@ -41,7 +41,7 @@ interface TagInterface extends Serializable, JsonSerializable {
 
     /**
      * Get Params for Attribute
-     * @return array<string,string|string[]>
+     * @return array
      */
     public function getParams(): array;
 
@@ -70,7 +70,7 @@ interface TagInterface extends Serializable, JsonSerializable {
 
     /**
      * Creates a new instance with given params
-     * @param array<string,string|string[]> $params
+     * @param array $params
      * @return static
      */
     public function withParams(array $params): self;
