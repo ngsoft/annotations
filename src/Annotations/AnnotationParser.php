@@ -29,7 +29,19 @@ mb_internal_encoding("UTF-8");
  */
 class AnnotationParser {
 
+    /**
+     * Version Information
+     */
     const VERSION = '1.0';
+
+    /**
+     * Tag Matching Regex
+     */
+    const TAG_MATCH_REGEX = '/^@(\w[\w\-\\\]+)\h?+/';
+
+    /**
+     * Tags That are always ignored
+     */
     const DEFAULT_IGNORE_TAGS = [
         'inheritdoc', 'phan'
     ];
@@ -96,7 +108,7 @@ class AnnotationParser {
             if ($pos !== false) {
                 //annotation there
                 $line = mb_substr($line, $pos);
-                if (preg_match('/^@(\w[\w-]+)\h?+/', $line, $matches) > 0) {
+                if (preg_match(self::TAG_MATCH_REGEX, $line, $matches) > 0) {
                     $tag = $matches[1];
                     if (!$whitelist and in_array($tag, $this->ignoreTags)) continue;
                     if ($whitelist and!in_array($tag, $tags)) continue;

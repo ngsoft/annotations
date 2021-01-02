@@ -13,13 +13,13 @@ interface TagInterface extends Serializable, JsonSerializable {
     /**
      * Tag Name
      */
-    const VALID_TAG_NAME_REGEX = '/^[a-z][\w\-]+$/i';
+    const VALID_TAG_NAME_REGEX = '/^[a-z][\w\-\\\]+$/i';
 
     /**
      * Attribute is a sub named parameter
      * Can be a variable or a method name and can be empty string
      */
-    const VALID_ATTRIBUTE_REGEX = '/^(|[a-z]\w+)$/i';
+    const VALID_ATTRIBUTE_REGEX = '/^(|[\\\]?[a-z]\w+)$/i';
 
     /**
      * Get Annotation Tag Name
