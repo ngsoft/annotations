@@ -23,7 +23,7 @@ class TagBasic implements TagInterface {
     /** @var string */
     protected $attribute = '';
 
-    /** @var array<string,string|string[]> */
+    /** @var array<string,string|string[]|null> */
     protected $params = [];
 
     /** {@inheritdoc} */
