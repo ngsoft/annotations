@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Processors;
 
 use NGSOFT\{
-    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface,
-    Interfaces\TagInterface, Interfaces\TagProcessorInterface
+    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\ProcessorTrait, Interfaces\AnnotationInterface,
+    Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 
 /**
@@ -15,18 +15,20 @@ use NGSOFT\{
  */
 class BooleanProcessor implements TagProcessorInterface {
 
-    /** @var string[] */
-    public static $ignoreTagClasses = [
-        TagProperty::class,
-        TagList::class,
-    ];
+    use ProcessorTrait;
+
+    public function __construct() {
+        $this
+                ->addIgnoreTagClass(TagProperty::class)
+                ->addIgnoreTagClass(TagList::class);
+    }
 
     public function process(AnnotationInterface $annotation, TagHandlerInterface $handler): TagInterface {
 
 
         $tag = $annotation->getTag();
 
-        if (!in_array(get_class($tag), self::$ignoreTagClasses)) {
+        if (!$this->isIgnored($tag)) {
             if (in_array($tag->getValue(), ['', 'true', 'on'])) return $tag->withValue(true);
             elseif (in_array($tag->getValue(), ['false', 'off'])) return $tag->withValue(true);
         }

@@ -6,28 +6,39 @@ namespace NGSOFT\Annotations\Processors;
 
 use JsonException;
 use NGSOFT\{
-    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Exceptions\AnnotationException, Interfaces\AnnotationInterface,
+    Annotations\AnnotationFactory, Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\ProcessorTrait,
+    Exceptions\AnnotationException, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface,
     Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 use function mb_strpos;
 
-class ArrayDetectorProcessor implements TagProcessorInterface {
+class ListProcessor implements TagProcessorInterface {
+
+    use ProcessorTrait;
 
     const DETECT_LIST_REGEX = '/^[\(](.*?)[\)]/';
     const DETECT_KEY_VALUE_PAIR = '/^[{](.*?)[}]/';
 
-    /** @var string[] */
-    public static $ignoreTagClasses = [
-        TagProperty::class,
-        TagList::class,
-    ];
+    /** @var AnnotationFactoryInterface */
+    protected $annotationFactory;
+
+    /** @param AnnotationFactoryInterface|null $annotationFactory */
+    public function __construct(
+            ?AnnotationFactoryInterface $annotationFactory = null
+    ) {
+
+        if ($annotationFactory === null) $annotationFactory = new AnnotationFactory();
+        $this->annotationFactory = $annotationFactory;
+
+        $this->addIgnoreTagClass(TagProperty::class);
+    }
 
     /**
      * Detects if list
      * @param string $input
      * @return bool
      */
-    private function isList(string $input): bool {
+    protected function isList(string $input): bool {
         return mb_strpos($input, '(') === 0 and mb_strpos($input, ')') !== false;
     }
 
@@ -36,15 +47,16 @@ class ArrayDetectorProcessor implements TagProcessorInterface {
      * @param string $input
      * @return mixed|null
      */
-    private function getRealValue(string $input) {
+    protected function getRealValue(string $input) {
         $input = trim($input);
         if (mb_strpos($input, '=') !== false) return null;
         try {
             $output = json_decode($input, false, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $error) {
             $error->getCode();
+            //can be a word without quotes
             if (preg_match('/^\w+$/', $input) > 0) $output = $input;
-            else return null;
+            else return null; //but cannot
         }
         return $output;
     }
@@ -54,7 +66,7 @@ class ArrayDetectorProcessor implements TagProcessorInterface {
      * @param string $input
      * @return array
      */
-    private function parseKeyPairList(string $input): array {
+    protected function parseKeyPairList(string $input): array {
         $result = [];
         if (preg_match(self::DETECT_KEY_VALUE_PAIR, $input, $matches) > 0) {
 
@@ -66,7 +78,6 @@ class ArrayDetectorProcessor implements TagProcessorInterface {
 
                 if (preg_match('/\h*(\w+)\h*=(.*)/', $argInput, $matchesArg) > 0) {
                     list(, $key, $value) = $matchesArg;
-
                     $output = $this->getRealValue($value);
                     if ($output === null) continue;
                     $result[$key] = $output;
@@ -81,7 +92,7 @@ class ArrayDetectorProcessor implements TagProcessorInterface {
      * @param string $input
      * @return array
      */
-    private function parseList(string $input): array {
+    protected function parseList(string $input): array {
         $result = [];
         if (preg_match(self::DETECT_LIST_REGEX, $input, $matches) > 0) {
 
@@ -95,11 +106,8 @@ class ArrayDetectorProcessor implements TagProcessorInterface {
             ) {
                 return $this->parseKeyPairList($args);
             }
-
             $args = trim($args, '{}');
-
             $args = preg_split('/\h*,\h*/', $args);
-
             foreach ($args as $value) {
                 $output = $this->getRealValue($value);
                 if ($output === null) continue;
@@ -114,13 +122,34 @@ class ArrayDetectorProcessor implements TagProcessorInterface {
     public function process(AnnotationInterface $annotation, TagHandlerInterface $handler): TagInterface {
         $tag = $annotation->getTag();
 
-        if (!in_array(get_class($tag), self::$ignoreTagClasses)) {
+        /** @var string $tagclass */
+        $tagClass = TagList::class;
+
+        if ($tag instanceof TagList) {
+            if (is_array($tag->getValue())) return $tag;
+            $tagClass = get_class($tag); //tag extended
+        }
+
+        if (!$this->isIgnored($tag)) {
             $input = $tag->getValue();
             if ($this->isList($input)) {
                 $output = $this->parseList($input);
-                if (count($output) > 0) {
-                    return new TagList($tag->getName(), $output);
-                } else throw new AnnotationException($annotation);
+                if ($tag instanceof TagList) return $tag->withValue($output);
+                return (new $tagClass)
+                                ->withName($tag->getName())
+                                ->withValue($output);
+            }
+            //can be a custom class extending TagList so returns a resolved result
+            if ($tag instanceof TagList) {
+                // resolve others
+                $tagToResolve = $this->annotationFactory->createTag($tag->getName(), $input); //creates basic tag so it isn't ignored by the other processors
+                $resolvedTag = $handler->handle($annotation->withTag($tagToResolve)); // use other processors
+
+                if ($input === $resolvedTag->getValue()) {
+                    //no change -> handle error
+                    if (!$this->getIgnoreErrors()) throw new AnnotationException($annotation);
+                    else return $tag->withValue(null);
+                } else return $tag->withValue($resolvedTag->getValue());
             }
         }
         return $handler->handle($annotation);

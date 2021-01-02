@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations;
 
 use NGSOFT\{
-    Annotations\Processors\ArrayDetectorProcessor, Annotations\Processors\BooleanProcessor, Annotations\Processors\NumberProcessor,
+    Annotations\Processors\BooleanProcessor, Annotations\Processors\ListProcessor, Annotations\Processors\NumberProcessor,
     Annotations\Processors\TypeHintingProcessor, Annotations\TagProcessorDispatcher, Annotations\Utils\NullHandler,
     Annotations\Utils\ProcessorHandler, Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface,
     Interfaces\TagProcessorInterface
@@ -19,7 +19,7 @@ class TagProcessorDispatcher {
         BooleanProcessor::class,
         TypeHintingProcessor::class,
         // to run first (Last position)
-        ArrayDetectorProcessor::class
+        ListProcessor::class
     ];
 
     /** @var TagHandlerInterface */
