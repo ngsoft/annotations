@@ -19,12 +19,8 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
     /** @var ClassNameResolver */
     protected $classNameResolver;
 
-    /** @var ListProcessor */
-    protected $listProcessor;
-
     public function __construct() {
         $this->classNameResolver = new ClassNameResolver();
-        $this->listProcessor = new ListProcessor();
     }
 
     /**

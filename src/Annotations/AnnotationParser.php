@@ -58,13 +58,12 @@ class AnnotationParser {
     }
 
     /**
-     * Set Silent Mode Value
+     * Set Silent Mode Value For the processors
      * @param bool $silentMode
      * @return static
      */
     public function setSilentMode(bool $silentMode): self {
         $this->processorDispatcher->setSilentMode($silentMode);
-
         return $this;
     }
 
@@ -94,7 +93,6 @@ class AnnotationParser {
             $line = trim($line);
             $line = trim($line, '/*');
             $pos = mb_strpos($line, '@');
-
             if ($pos !== false) {
                 //annotation there
                 $line = mb_substr($line, $pos);
