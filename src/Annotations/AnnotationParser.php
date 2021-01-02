@@ -34,16 +34,16 @@ class AnnotationParser {
     ];
 
     /** @var AnnotationFactoryInterface */
-    private $annotationFactory;
+    protected $annotationFactory;
 
     /** @var Dispatcher */
-    private $processorDispatcher;
+    protected $processorDispatcher;
 
     /** @var string[] */
-    private $ignoreTags = [];
+    protected $ignoreTags = [];
 
     /** @var CacheItemPoolInterface */
-    private $cache;
+    protected $cache;
 
     public function __construct(
             ?Dispatcher $processorDispatcher = null,
@@ -54,6 +54,17 @@ class AnnotationParser {
         $this->annotationFactory = new AnnotationFactory();
         if ($processorDispatcher instanceof Dispatcher) $this->processorDispatcher = $processorDispatcher;
         else $this->processorDispatcher = new Dispatcher();
+    }
+
+    /**
+     * Set Silent Mode Value
+     * @param bool $silentMode
+     * @return static
+     */
+    public function setSilentMode(bool $silentMode): self {
+        $this->processorDispatcher->setSilentMode($silentMode);
+
+        return $this;
     }
 
     /**
@@ -206,7 +217,7 @@ class AnnotationParser {
      * @param string[] $tags Tags to search for
      * @return CacheItemInterface|null
      */
-    private function getCacheItem(ReflectionClass $reflector, bool $classParents, array $tags): ?CacheItemInterface {
+    protected function getCacheItem(ReflectionClass $reflector, bool $classParents, array $tags): ?CacheItemInterface {
         if (!$this->cache instanceof CacheItemPoolInterface) return null;
 
         $key = 'annotations' . implode('', $tags);
@@ -227,7 +238,7 @@ class AnnotationParser {
      * @param CacheItemInterface $item
      * @return bool
      */
-    private function saveCacheItem(CacheItemInterface $item): bool {
+    protected function saveCacheItem(CacheItemInterface $item): bool {
         return $this->cache->save($item);
     }
 
@@ -237,7 +248,7 @@ class AnnotationParser {
      * @param string[] $tags Tags to search for
      * @return AnnotationInterface[]
      */
-    private function singleDocCommentParser($reflector, array $tags = []): array {
+    protected function singleDocCommentParser($reflector, array $tags = []): array {
         $collection = [];
         if (method_exists($reflector, 'getDocComment')) {
             if (($docComment = $reflector->getDocComment()) !== false) {
@@ -263,7 +274,7 @@ class AnnotationParser {
      * @param AnnotationInterface[] $annotations
      * @return AnnotationInterface[]
      */
-    private function process(array $annotations): array {
+    protected function process(array $annotations): array {
         $result = [];
         foreach ($annotations as $annotation) {
             $result[] = $this->processorDispatcher->handle($annotation);

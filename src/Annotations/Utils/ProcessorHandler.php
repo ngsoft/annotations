@@ -26,4 +26,15 @@ class ProcessorHandler implements TagHandlerInterface {
         return $this->processor->process($annotation, $this->next);
     }
 
+    /**
+     * Set Silent Mode Value
+     * @param bool $silentMode
+     * @return $this
+     */
+    public function setSilentMode(bool $silentMode): TagHandlerInterface {
+        $this->processor->setSilentMode($silentMode);
+        $this->next->setSilentMode($silentMode);
+        return $this;
+    }
+
 }

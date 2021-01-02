@@ -19,14 +19,14 @@ interface TagProcessorInterface {
 
     /**
      * Set Silent Mode
-     * @param bool $ignoreErrors if set to true Processor will not throw exception on error, it will pass
+     * @param bool $silentMode if set to true Processor will not throw exception on error, it will pass
      * @return static
      */
-    public function setIgnoreErrors(bool $ignoreErrors): self;
+    public function setSilentMode(bool $silentMode): self;
 
     /**
      * Get Silent Mode
      * @return bool
      */
-    public function getIgnoreErrors(): bool;
+    public function getSilentMode(): bool;
 }

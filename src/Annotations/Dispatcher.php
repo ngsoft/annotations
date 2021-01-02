@@ -58,6 +58,7 @@ class Dispatcher {
      * @return AnnotationInterface
      */
     public function handle(AnnotationInterface $annotation): AnnotationInterface {
+        $this->stack->setSilentMode($this->silentMode);
         $tag = $this->stack->handle($annotation);
         return $annotation->withTag($tag);
     }
@@ -88,7 +89,7 @@ class Dispatcher {
     /**
      * Set Silent Mode Value
      * @param bool $silentMode
-     * @return $this
+     * @return static
      */
     public function setSilentMode(bool $silentMode): self {
         $this->silentMode = $silentMode;

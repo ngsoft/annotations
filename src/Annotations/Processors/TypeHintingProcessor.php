@@ -115,8 +115,8 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
                     //handle args
                     if (($arguments = $this->resolveArguments($annotation, $args)) !== null) {
                         return $tag->withParams($arguments);
-                    } elseif (!$this->getIgnoreErrors()) throw new AnnotationException($annotation);
-                } elseif (!$this->getIgnoreErrors()) throw new AnnotationException($annotation);
+                    } elseif (!$this->getSilentMode()) throw new AnnotationException($annotation);
+                } elseif (!$this->getSilentMode()) throw new AnnotationException($annotation);
                 return $tag->withValue(null);
             }
 
@@ -129,7 +129,7 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
                 if ($result = $this->resolveHint($annotation, $hint)) {
                     if (count($result) == 1) $result = $result[0];
                     return $tag->withAttribute($name)->withValue($result);
-                } elseif (!$this->getIgnoreErrors()) throw new AnnotationException($annotation);
+                } elseif (!$this->getSilentMode()) throw new AnnotationException($annotation);
                 //empty array or null
                 return $tag->withValue(null);
             }

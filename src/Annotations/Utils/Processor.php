@@ -18,7 +18,7 @@ abstract class Processor implements TagProcessorInterface {
     protected $ignoreTagClasses = [];
 
     /** @var bool */
-    protected $ignoreErrors = false;
+    protected $silentMode = false;
 
     /**
      * Add an ignored tag class
@@ -53,15 +53,14 @@ abstract class Processor implements TagProcessorInterface {
     }
 
     /** {@inheritdoc} */
-    public function setIgnoreErrors(bool $ignoreErrors): TagProcessorInterface {
-
-        $this->ignoreErrors = $ignoreErrors;
-        return $this;
+    public function getSilentMode(): bool {
+        return $this->silentMode;
     }
 
     /** {@inheritdoc} */
-    public function getIgnoreErrors(): bool {
-        return $this->ignoreErrors;
+    public function setSilentMode(bool $silentMode): \NGSOFT\Interfaces\TagProcessorInterface {
+        $this->silentMode = $silentMode;
+        return $this;
     }
 
 }

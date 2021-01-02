@@ -10,8 +10,16 @@ use NGSOFT\Interfaces\{
 
 class NullHandler implements TagHandlerInterface {
 
+    /** @var bool */
+    protected $silentMode = false;
+
     public function handle(AnnotationInterface $annotation): TagInterface {
         return $annotation->getTag();
+    }
+
+    public function setSilentMode(bool $silentMode): \NGSOFT\Interfaces\TagHandlerInterface {
+        $this->silentMode = $silentMode;
+        return $this;
     }
 
 }

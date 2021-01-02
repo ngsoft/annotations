@@ -4,7 +4,7 @@ namespace NGSOFT\Annotations\Tags;
 
 /**
  * Type Hinting for List Tags
- * Initialized by ArrayDetectorProcessor
+ * Initialized and detected by ListProcessor
  */
 class TagList extends TagBasic {
 

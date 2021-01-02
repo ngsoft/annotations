@@ -169,7 +169,7 @@ class ListProcessor extends Processor implements TagProcessorInterface {
 
                 if ($input === $resolvedTag->getValue()) {
                     //no change -> handle error
-                    if (!$this->getIgnoreErrors()) throw new AnnotationException($annotation);
+                    if (!$this->getSilentMode()) throw new AnnotationException($annotation);
                     else return $tag->withValue(null);
                 } else return $tag->withValue($resolvedTag->getValue());
             }
