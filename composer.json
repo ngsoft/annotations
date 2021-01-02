@@ -15,7 +15,7 @@
         "psr/cache": "^1"
     },
     "require": {
-        "php": "^7.4",
+        "php": ">=7.4",
         "ext-tokenizer": "*",
         "symfony/polyfill-mbstring": "^1.20"
     },
