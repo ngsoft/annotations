@@ -63,10 +63,8 @@ class AnnotationParser {
             ?AnnotationFactoryInterface $annotationFactory = null
     ) {
         $this->ignoreTags = self::DEFAULT_IGNORE_TAGS;
-        if ($annotationFactory instanceof AnnotationFactoryInterface) $this->annotationFactory = $annotationFactory;
-        $this->annotationFactory = new AnnotationFactory();
-        if ($processorDispatcher instanceof Dispatcher) $this->processorDispatcher = $processorDispatcher;
-        else $this->processorDispatcher = new Dispatcher();
+        $this->annotationFactory = $annotationFactory ?? new AnnotationFactory();
+        $this->processorDispatcher = $processorDispatcher ?? new Dispatcher();
     }
 
     /**

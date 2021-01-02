@@ -28,8 +28,7 @@ class ListProcessor extends Processor implements TagProcessorInterface {
             ?AnnotationFactoryInterface $annotationFactory = null
     ) {
 
-        if ($annotationFactory === null) $annotationFactory = new AnnotationFactory();
-        $this->annotationFactory = $annotationFactory;
+        $this->annotationFactory = $annotationFactory ?? new AnnotationFactory();
         $this->classNameResolver = new ClassNameResolver();
         $this->addIgnoreTagClass(TagProperty::class);
     }

@@ -39,8 +39,7 @@ class Dispatcher {
             ?TagHandlerInterface $kernel = null
     ) {
         //add the last processor to the stack
-        if ($kernel !== null) $this->stack = $kernel;
-        else $this->stack = new NullHandler();
+        $this->stack = $kernel ?? new NullHandler();
         if (is_bool($silentMode)) $this->silentMode = $silentMode;
         if (!is_array($processors)) $processors = array_map(fn($classname) => new $classname(), self::DEFAULT_PROCESSORS);
 
