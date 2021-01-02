@@ -6,7 +6,8 @@ namespace NGSOFT\Annotations;
 
 use InvalidArgumentException;
 use NGSOFT\{
-    Annotations\Utils\Cache, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface
+    Annotations\Utils\AnnotationFactory, Annotations\Utils\Cache, Annotations\Utils\Dispatcher, Interfaces\AnnotationFactoryInterface,
+    Interfaces\AnnotationInterface
 };
 use Psr\Cache\{
     CacheItemInterface, CacheItemPoolInterface

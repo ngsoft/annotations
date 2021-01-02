@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NGSOFT\Annotations;
+namespace NGSOFT\Annotations\Utils;
 
 use InvalidArgumentException;
 use NGSOFT\{

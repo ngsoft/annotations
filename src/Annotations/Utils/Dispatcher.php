@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace NGSOFT\Annotations;
+namespace NGSOFT\Annotations\Utils;
 
 use NGSOFT\{
     Annotations\Processors\BooleanProcessor, Annotations\Processors\ListProcessor, Annotations\Processors\NumberProcessor,

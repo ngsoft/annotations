@@ -6,7 +6,7 @@ namespace NGSOFT\Annotations\Processors;
 
 use JsonException;
 use NGSOFT\{
-    Annotations\AnnotationFactory, Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\ClassNameResolver,
+    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\AnnotationFactory, Annotations\Utils\ClassNameResolver,
     Annotations\Utils\Processor, Exceptions\AnnotationException, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface,
     Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
