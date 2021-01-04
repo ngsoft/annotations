@@ -22,7 +22,7 @@ final class ClassNameResolver {
      */
     const RESERVED_KEYWORDS = [
         'boolean', 'integer', 'double', 'string', 'array', 'object', 'resource', 'NULL',
-        'bool', 'int', 'float', 'void', 'iterable', 'null', 'mixed', 'callable'
+        'bool', 'int', 'float', 'void', 'iterable', 'null', 'mixed', 'callable',
     ];
 
     /**
