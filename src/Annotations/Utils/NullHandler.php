@@ -17,7 +17,7 @@ class NullHandler implements TagHandlerInterface {
         return $annotation->getTag();
     }
 
-    public function setSilentMode(bool $silentMode): \NGSOFT\Interfaces\TagHandlerInterface {
+    public function setSilentMode(bool $silentMode): TagHandlerInterface {
         $this->silentMode = $silentMode;
         return $this;
     }

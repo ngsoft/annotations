@@ -58,7 +58,7 @@ abstract class Processor implements TagProcessorInterface {
     }
 
     /** {@inheritdoc} */
-    public function setSilentMode(bool $silentMode): \NGSOFT\Interfaces\TagProcessorInterface {
+    public function setSilentMode(bool $silentMode): TagProcessorInterface {
         $this->silentMode = $silentMode;
         return $this;
     }
