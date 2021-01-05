@@ -6,9 +6,8 @@ namespace NGSOFT\Annotations\Utils;
 
 use InvalidArgumentException;
 use NGSOFT\{
-    Annotations\Tags\TagBasic, Annotations\Tags\TagProperty, Annotations\Types\AnnotationBasic, Annotations\Types\ClassAnnotation,
-    Annotations\Types\MethodAnnotation, Annotations\Types\PropertyAnnotation, Interfaces\AnnotationFactoryInterface,
-    Interfaces\AnnotationInterface, Interfaces\TagInterface
+    Annotations\Tags\TagBasic, Annotations\Tags\TagProperty, Annotations\Types\AnnotationBasic, Annotations\Types\ClassAnnotation, Annotations\Types\MethodAnnotation,
+    Annotations\Types\PropertyAnnotation, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface, Interfaces\TagInterface
 };
 use ReflectionClass,
     ReflectionMethod,
@@ -29,6 +28,7 @@ class AnnotationFactory implements AnnotationFactoryInterface {
     /** @var array<string,string> */
     protected $tagClasses = [
         'var' => TagProperty::class,
+        'type' => TagProperty::class,
         'return' => TagProperty::class,
         'param' => TagProperty::class,
         'property' => TagProperty::class,
