@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Processors;
 
 use NGSOFT\{
-    Annotations\Tags\TagProperty, Annotations\Utils\ClassNameResolver, Annotations\Utils\Processor, Exceptions\AnnotationException,
-    Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
+    Annotations\Tags\TagProperty, Annotations\Utils\ClassNameResolver, Annotations\Utils\Processor, Exceptions\AnnotationException, Interfaces\AnnotationInterface,
+    Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 use function mb_strpos,
              mb_substr;
@@ -69,7 +69,7 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
 
             $input = trim($input);
             //check if hint and var
-            if (preg_match('/^\??(?:(\S+)\h+)?\$(\w+)/', $input, $matches)) {
+            if (preg_match('/^\??(?:(\S+)\h+)?\.*\$(\w+)/', $input, $matches)) {
                 list(, $hint, $name) = $matches;
                 if (empty($hint)) {
                     $result[$name] = null;
@@ -116,8 +116,8 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
                 return $tag->withValue(null);
             }
 
-            // @param value1|value2 [$varname] ignored
-            elseif (preg_match('/^\??(\S+)(?:\h+\$(\w+))?\h*/', $input, $matches) > 0) {
+            // @param value1|value2 [[...]$varname] ignored
+            elseif (preg_match('/^\??(\S+)(?:\h+\.*\$(\w+))?\h*/', $input, $matches) > 0) {
                 $name = '';
                 if (count($matches) > 2) list(, $hint, $name) = $matches;
                 else list(, $hint) = $matches;
