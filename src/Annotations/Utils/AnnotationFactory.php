@@ -29,6 +29,7 @@ class AnnotationFactory implements AnnotationFactoryInterface {
     protected $tagClasses = [
         'var' => TagProperty::class,
         'type' => TagProperty::class,
+        'type' => TagProperty::class,
         'return' => TagProperty::class,
         'param' => TagProperty::class,
         'property' => TagProperty::class,
