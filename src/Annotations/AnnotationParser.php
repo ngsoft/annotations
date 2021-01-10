@@ -42,7 +42,7 @@ class AnnotationParser {
      * Tags That are always ignored
      */
     const DEFAULT_IGNORE_TAGS = [
-        'inheritdoc', 'ignore', 'internal'
+        'inheritdoc', 'ignore', 'internal', 'deprecated'
     ];
 
     /** @var AnnotationFactoryInterface */
