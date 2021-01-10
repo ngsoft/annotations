@@ -6,8 +6,7 @@ namespace NGSOFT\Annotations;
 
 use InvalidArgumentException;
 use NGSOFT\{
-    Annotations\Utils\AnnotationFactory, Annotations\Utils\Cache, Annotations\Utils\Dispatcher, Interfaces\AnnotationFactoryInterface,
-    Interfaces\AnnotationInterface
+    Annotations\Utils\AnnotationFactory, Annotations\Utils\Cache, Annotations\Utils\Dispatcher, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface
 };
 use Psr\Cache\{
     CacheItemInterface, CacheItemPoolInterface
@@ -43,7 +42,7 @@ class AnnotationParser {
      * Tags That are always ignored
      */
     const DEFAULT_IGNORE_TAGS = [
-        'inheritdoc', 'phan'
+        'inheritdoc', 'ignore', 'internal'
     ];
 
     /** @var AnnotationFactoryInterface */
