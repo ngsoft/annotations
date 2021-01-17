@@ -6,7 +6,7 @@ namespace NGSOFT\Annotations;
 
 use InvalidArgumentException;
 use NGSOFT\{
-    Annotations\Utils\AnnotationFactory, Annotations\Utils\Cache, Annotations\Utils\Dispatcher, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface
+    Annotations\Utils\AnnotationFactory, Annotations\Utils\Dispatcher, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface
 };
 use Psr\Cache\{
     CacheItemInterface, CacheItemPoolInterface
@@ -45,6 +45,11 @@ class AnnotationParser {
         'inheritdoc', 'ignore', 'internal', 'deprecated'
     ];
 
+    /**
+     * Prefix for cache key
+     */
+    const CACHE_KEY_PREFIX = 'NGSOFT_ANNOTATIONS_';
+
     /** @var AnnotationFactoryInterface */
     protected $annotationFactory;
 
@@ -57,7 +62,7 @@ class AnnotationParser {
     /** @var CacheItemPoolInterface */
     protected $cache;
 
-    /** @var int */
+    /** @var int|null */
     protected $ttl;
 
     public function __construct(
@@ -217,6 +222,7 @@ class AnnotationParser {
      * @return self
      */
     public function setCachePool(CacheItemPoolInterface $cache, int $ttl = null): self {
+        $this->ttl = is_int($ttl) ? max(0, $ttl) : null;
         $this->cache = $cache;
         return $this;
     }
@@ -231,14 +237,15 @@ class AnnotationParser {
     protected function getCacheItem(ReflectionClass $reflector, bool $classParents, array $tags): ?CacheItemInterface {
         if (!$this->cache instanceof CacheItemPoolInterface) return null;
 
-        $key = 'annotations' . implode('', $tags);
+        $key = self::CACHE_KEY_PREFIX . implode('', $tags);
         $classes = [$reflector];
         if ($classParents) $classes = $this->getClassParents($reflector);
 
         foreach ($classes as $classReflector) {
             $filename = $classReflector->getFileName();
             $fileinfo = new SplFileInfo($filename);
-            $key .= $fileinfo->getMTime() . $fileinfo->getPathname();
+            // invalidates using $fileinfo->getMTime(); if file has been modified
+            $key .= '_' . str_replace('\\', '_', $classReflector->getName()) . '_' . $fileinfo->getMTime();
         }
         $key = md5($key);
         return $this->cache->getItem($key);
@@ -250,6 +257,7 @@ class AnnotationParser {
      * @return bool
      */
     protected function saveCacheItem(CacheItemInterface $item): bool {
+        $item->expiresAfter($this->ttl);
         return $this->cache->save($item);
     }
 

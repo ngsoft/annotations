@@ -24,7 +24,7 @@ final class ClassNameResolver {
         'boolean', 'integer', 'double', 'string', 'array', 'object', 'resource', 'NULL',
         'bool', 'int', 'float', 'void', 'iterable', 'null', 'mixed', 'callable',
         // can trigger an error
-        'true', 'false'
+        'true', 'false', 'class-string',
     ];
 
     /**

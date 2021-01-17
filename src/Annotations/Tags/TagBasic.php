@@ -98,16 +98,11 @@ class TagBasic implements TagInterface {
         ];
     }
 
-    /** {@inheritdoc} */
-    public function serialize() {
-        $array = $this->jsonSerialize();
-        return \serialize($array);
+    public function __serialize() {
+        return $this->jsonSerialize();
     }
 
-    /** {@inheritdoc} */
-    public function unserialize($serialized) {
-        $array = \unserialize($serialized);
-        if (!is_array($array)) throw new RuntimeException('Cannot unserialize, invalid value');
+    public function __unserialize(array $data) {
         $this->name = $array['name'];
         $this->value = $array['value'];
         $this->attribute = $array['attribute'];

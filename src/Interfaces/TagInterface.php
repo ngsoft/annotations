@@ -8,7 +8,7 @@ use InvalidArgumentException,
     JsonSerializable,
     Serializable;
 
-interface TagInterface extends Serializable, JsonSerializable {
+interface TagInterface extends JsonSerializable {
 
     /**
      * Tag Name
