@@ -247,6 +247,7 @@ class AnnotationParser {
             // invalidates using $fileinfo->getMTime(); if file has been modified
             $key .= '_' . str_replace('\\', '_', $classReflector->getName()) . '_' . $fileinfo->getMTime();
         }
+        // key can be too long some times, encode it to 32 chars hexbit
         $key = md5($key);
         return $this->cache->getItem($key);
     }
