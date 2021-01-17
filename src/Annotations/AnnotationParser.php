@@ -217,8 +217,8 @@ class AnnotationParser {
 
     /**
      * Set Cache Pool
-     * @param CacheItemPoolInterface $cache
-     * @param int|null $ttl
+     * @param CacheItemPoolInterface $cache Cache Pool
+     * @param int|null $ttl Maximum lifetime, null value will use the cache pool implementation lifetime
      * @return self
      */
     public function setCachePool(CacheItemPoolInterface $cache, int $ttl = null): self {
