@@ -10,8 +10,7 @@ use NGSOFT\Interfaces\{
 };
 use ReflectionClass,
     ReflectionMethod,
-    ReflectionProperty,
-    RuntimeException;
+    ReflectionProperty;
 
 class AnnotationBasic implements AnnotationInterface {
 
@@ -129,6 +128,13 @@ class AnnotationBasic implements AnnotationInterface {
         return $clone;
     }
 
+    ////////////////////////////   Dump Friendly   ////////////////////////////
+
+    /** {@inheritdoc} */
+    public function __debugInfo() {
+        return $this->jsonSerialize();
+    }
+
     ///////////////////////////////// Exports(cache and json)  /////////////////////////////////
 
     /** {@inheritdoc} */
@@ -144,24 +150,17 @@ class AnnotationBasic implements AnnotationInterface {
         ];
     }
 
-    /** {@inheritdoc} */
-    public function serialize() {
-        $array = $this->jsonSerialize();
-        return \serialize($array);
+    public function __serialize() {
+        return $this->jsonSerialize();
     }
 
-    /** {@inheritdoc} */
-    public function unserialize($serialized) {
-
-        $array = \unserialize($serialized);
-        if (!is_array($array)) throw new RuntimeException('Cannot unserialize, invalid value');
-
-        $this->tag = $array['tag'];
-        $this->type = $array['type'];
-        $this->className = $array['class'];
-        $this->name = $array['name'];
-        $this->fileName = $array['filename'];
-        $reflector = $array['reflector'];
+    public function __unserialize(array $data) {
+        $this->tag = $data['tag'];
+        $this->type = $data['type'];
+        $this->className = $data['class'];
+        $this->name = $data['name'];
+        $this->fileName = $data['filename'];
+        $reflector = $data['reflector'];
         if ($reflector == ReflectionClass::class) $this->reflector = new ReflectionClass($this->className);
         else $this->reflector = new $reflector($this->className, $this->name);
     }

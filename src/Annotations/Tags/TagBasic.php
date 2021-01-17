@@ -87,6 +87,13 @@ class TagBasic implements TagInterface {
         return $clone;
     }
 
+    ////////////////////////////   Dump Friendly   ////////////////////////////
+
+    /** {@inheritdoc} */
+    public function __debugInfo() {
+        return $this->jsonSerialize();
+    }
+
     ////////////////////////////   CacheAble   ////////////////////////////
 
     /** {@inheritdoc} */
