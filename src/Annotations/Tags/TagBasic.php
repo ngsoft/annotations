@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Tags;
 
 use InvalidArgumentException,
-    NGSOFT\Interfaces\TagInterface,
-    RuntimeException;
+    NGSOFT\Interfaces\TagInterface;
 
 /**
  * This is a Basic Tag
@@ -88,6 +87,18 @@ class TagBasic implements TagInterface {
         return $clone;
     }
 
+    ////////////////////////////   CacheAble   ////////////////////////////
+
+    /** {@inheritdoc} */
+    public static function __set_state($array) {
+        $i = new static();
+        $i->name = $array['name'] ?? '';
+        $i->value = $array['value'] ?? null;
+        $i->attribute = $array['attribute'] ?? '';
+        $i->params = $array['params'] ?? [];
+        return $i;
+    }
+
     /** {@inheritdoc} */
     public function jsonSerialize() {
         return [
@@ -98,15 +109,17 @@ class TagBasic implements TagInterface {
         ];
     }
 
+    /** {@inheritdoc} */
     public function __serialize() {
         return $this->jsonSerialize();
     }
 
+    /** {@inheritdoc} */
     public function __unserialize(array $data) {
-        $this->name = $array['name'];
-        $this->value = $array['value'];
-        $this->attribute = $array['attribute'];
-        $this->params = $array['params'];
+        $this->name = $data['name'] ?? '';
+        $this->value = $data['value'] ?? null;
+        $this->attribute = $data['attribute'] ?? '';
+        $this->params = $data['params'] ?? [];
     }
 
 }

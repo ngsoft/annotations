@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace NGSOFT\Interfaces;
 
 use InvalidArgumentException,
-    JsonSerializable,
-    Serializable;
+    JsonSerializable;
 
 interface TagInterface extends JsonSerializable {
 
