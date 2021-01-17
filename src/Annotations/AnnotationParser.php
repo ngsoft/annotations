@@ -57,9 +57,12 @@ class AnnotationParser {
     /** @var CacheItemPoolInterface */
     protected $cache;
 
+    /** @var int */
+    protected $ttl;
+
     public function __construct(
-            ?Dispatcher $processorDispatcher = null,
-            ?AnnotationFactoryInterface $annotationFactory = null
+            Dispatcher $processorDispatcher = null,
+            AnnotationFactoryInterface $annotationFactory = null
     ) {
         $this->ignoreTags = self::DEFAULT_IGNORE_TAGS;
         $this->annotationFactory = $annotationFactory ?? new AnnotationFactory();
@@ -213,8 +216,8 @@ class AnnotationParser {
      * @param int|null $ttl
      * @return self
      */
-    public function setCachePool(CacheItemPoolInterface $cache, ?int $ttl = null): self {
-        $this->cache = new Cache($cache, $ttl);
+    public function setCachePool(CacheItemPoolInterface $cache, int $ttl = null): self {
+        $this->cache = $cache;
         return $this;
     }
 
