@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Processors;
 
 use NGSOFT\{
-    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\Processor, Interfaces\AnnotationInterface,
-    Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
+    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\Processor, Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface,
+    Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 
 /**
  * Handles single tags that don't have value (flags) or
- * have values like true on false off
+ * have values like true, on, false, off
  */
 class BooleanProcessor extends Processor implements TagProcessorInterface {
 
