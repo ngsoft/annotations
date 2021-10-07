@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace NGSOFT\Annotations\Tags;
 
-use InvalidArgumentException,
-    NGSOFT\Interfaces\TagInterface;
+use InvalidArgumentException;
+use NGSOFT\Interfaces\{
+    AnnotationInterface, TagInterface
+};
 
 /**
  * This is a Basic Tag
@@ -24,6 +26,9 @@ class TagBasic implements TagInterface {
 
     /** @var array<string,string|string[]|null> */
     protected $params = [];
+
+    /** @var AnnotationInterface */
+    protected $annotation;
 
     /** {@inheritdoc} */
     public function getName(): string {
@@ -48,6 +53,18 @@ class TagBasic implements TagInterface {
     /** {@inheritdoc} */
     public function getParams(): array {
         return $this->params;
+    }
+
+    /** {@inheritdoc} */
+    public function getAnnotation(): AnnotationInterface {
+        return $this->annotation;
+    }
+
+    /** {@inheritdoc} */
+    public function withAnnotation(AnnotationInterface $annotation): self {
+        $clone = clone $this;
+        $clone->annotation = $annotation;
+        return $clone;
     }
 
     /** {@inheritdoc} */
@@ -112,7 +129,7 @@ class TagBasic implements TagInterface {
             'name' => $this->name,
             'value' => $this->value,
             'attribute' => $this->attribute,
-            'params' => $this->params
+            'params' => $this->params,
         ];
     }
 

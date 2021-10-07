@@ -83,6 +83,7 @@ class AnnotationFactory implements AnnotationFactoryInterface {
 
     /** {@inheritdoc} */
     public function createAnnotation($reflector, TagInterface $tag): AnnotationInterface {
+        /** @var AnnotationInterface $annotation */
         $this->assertValidReflection($reflector);
         $reflectorClass = get_class($reflector);
         $annotationClass = $this->annotationClasses[$reflectorClass] ?? AnnotationBasic::class;

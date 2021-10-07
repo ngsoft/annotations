@@ -51,6 +51,21 @@ interface TagInterface extends JsonSerializable {
     public function getParams(): array;
 
     /**
+     * Returns Annotation for the Tag
+     *
+     * @return AnnotationInterface
+     */
+    public function getAnnotation(): AnnotationInterface;
+
+    /**
+     * Returns new instance with given Annotation
+     *
+     * @param AnnotationInterface $annotation
+     * @return static
+     */
+    public function withAnnotation(AnnotationInterface $annotation): self;
+
+    /**
      * Returns a new instance with given tag name
      * @param string $name
      * @return TagInterface

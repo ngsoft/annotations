@@ -54,7 +54,7 @@ class AnnotationBasic implements AnnotationInterface {
     public function __construct($reflector, TagInterface $tag) {
         $this->assertValidReflection($reflector);
         $this->reflector = $reflector;
-        $this->tag = $tag;
+        $this->tag = $tag->withAnnotation($this);
         $this->type = array_search(get_class($reflector), self::ANNOTATION_TYPES);
         $this->name = $reflector->getName();
         if ($reflector instanceof ReflectionClass) {
@@ -163,6 +163,7 @@ class AnnotationBasic implements AnnotationInterface {
         $reflector = $data['reflector'];
         if ($reflector == ReflectionClass::class) $this->reflector = new ReflectionClass($this->className);
         else $this->reflector = new $reflector($this->className, $this->name);
+        $this->tag = $this->tag->withAnnotation($this);
     }
 
 }
