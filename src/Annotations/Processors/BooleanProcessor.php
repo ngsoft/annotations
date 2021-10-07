@@ -31,7 +31,7 @@ class BooleanProcessor extends Processor implements TagProcessorInterface {
                 and is_string($tag->getValue())
         ) {
             if (in_array($tag->getValue(), ['', 'true', 'on'])) return $tag->withValue(true);
-            elseif (in_array($tag->getValue(), ['false', 'off'])) return $tag->withValue(true);
+            elseif (in_array($tag->getValue(), ['false', 'off'])) return $tag->withValue(false);
         }
 
         return $handler->handle($annotation);
