@@ -108,7 +108,9 @@ class TagBasic implements TagInterface {
 
     /** {@inheritdoc} */
     public function __debugInfo() {
-        return $this->jsonSerialize();
+        $data = $this->jsonSerialize();
+        $data['annotationClass'] = $this->annotation ? get_class($this->annotation) : null;
+        return $data;
     }
 
     ////////////////////////////   CacheAble   ////////////////////////////
