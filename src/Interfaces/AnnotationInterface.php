@@ -34,8 +34,6 @@ interface AnnotationInterface extends JsonSerializable {
      */
     public function getTagValue();
 
-
-
     ///////////////////////////////// Configurators  /////////////////////////////////
 
     /**
@@ -52,13 +50,10 @@ interface AnnotationInterface extends JsonSerializable {
      */
     public function withTagValue($value): AnnotationInterface;
 
-
-
-
     ///////////////////////////////// GETTERS  /////////////////////////////////
 
     /**
-     * Gat the AnnotationTagInterface instance
+     * Get the AnnotationTagInterface instance
      * @return TagInterface
      */
     public function getTag(): TagInterface;

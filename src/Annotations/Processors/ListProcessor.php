@@ -6,16 +6,16 @@ namespace NGSOFT\Annotations\Processors;
 
 use JsonException;
 use NGSOFT\{
-    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\AnnotationFactory, Annotations\Utils\ClassNameResolver,
-    Annotations\Utils\Processor, Exceptions\AnnotationException, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface,
-    Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
+    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\AnnotationFactory, Annotations\Utils\ClassNameResolver, Annotations\Utils\Processor,
+    Exceptions\AnnotationException, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface, Interfaces\TagInterface,
+    Interfaces\TagProcessorInterface
 };
 use function mb_strpos;
 
 class ListProcessor extends Processor implements TagProcessorInterface {
 
     const DETECT_LIST_REGEX = '/^[\(](.*?)[\)]/';
-    const DETECT_KEY_VALUE_PAIR = '/^[{](.*?)[}]/';
+    const DETECT_KEY_VALUE_PAIR = '/^\{(.*?)\}$/';
 
     /** @var AnnotationFactoryInterface */
     protected $annotationFactory;
@@ -67,8 +67,9 @@ class ListProcessor extends Processor implements TagProcessorInterface {
      * @return array
      */
     protected function parseKeyPairList(string $input): array {
-        $result = [];
+
         if (preg_match(self::DETECT_KEY_VALUE_PAIR, $input, $matches) > 0) {
+
 
             list(, $args) = $matches;
 
@@ -98,6 +99,8 @@ class ListProcessor extends Processor implements TagProcessorInterface {
 
             list(, $args) = $matches;
             $args = trim($args);
+            if ($args[0] !== '{' and $args[-1] !== '}') $args = sprintf('{%s}', $args);
+
             if (
                     mb_strpos($args, '{') === 0
                     and ($pos = mb_strpos($args, '}')) !== false
@@ -136,8 +139,11 @@ class ListProcessor extends Processor implements TagProcessorInterface {
                 and is_string($tag->getValue())
         ) {
             $input = $tag->getValue();
+
             if ($this->isList($input)) {
+
                 $output = $this->parseList($input);
+
                 //resolve class name
                 foreach ($output as &$value) {
                     if (
