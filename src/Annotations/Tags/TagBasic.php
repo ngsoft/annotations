@@ -68,7 +68,7 @@ class TagBasic implements TagInterface {
     }
 
     /** {@inheritdoc} */
-    public function withName(string $name): TagInterface {
+    public function withName(string $name): self {
         if (!preg_match(self::VALID_TAG_NAME_REGEX, $name)) {
             throw new InvalidArgumentException(sprintf('Invalid tag name "%s".', $name));
         }
@@ -78,14 +78,14 @@ class TagBasic implements TagInterface {
     }
 
     /** {@inheritdoc} */
-    public function withValue($value): TagInterface {
+    public function withValue($value): self {
         $clone = clone $this;
         $clone->value = $value;
         return $clone;
     }
 
     /** {@inheritdoc} */
-    public function withAttribute(string $attribute): TagInterface {
+    public function withAttribute(string $attribute): self {
         if (
                 !preg_match(self::VALID_ATTRIBUTE_REGEX, $attribute)
         ) {
@@ -98,7 +98,7 @@ class TagBasic implements TagInterface {
     }
 
     /** {@inheritdoc} */
-    public function withParams(array $params): TagInterface {
+    public function withParams(array $params): self {
         $clone = clone $this;
         $clone->params = $params;
         return $clone;

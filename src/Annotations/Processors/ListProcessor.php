@@ -68,13 +68,11 @@ class ListProcessor extends Processor implements TagProcessorInterface {
      */
     protected function parseKeyPairList(string $input): array {
 
+        $result = [];
+
         if (preg_match(self::DETECT_KEY_VALUE_PAIR, $input, $matches) > 0) {
-
-
             list(, $args) = $matches;
-
             $args = preg_split('/\h*,\h*/', $args);
-
             foreach ($args as $argInput) {
 
                 if (preg_match('/\h*(\w+)\h*=(.*)/', $argInput, $matchesArg) > 0) {

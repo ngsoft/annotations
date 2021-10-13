@@ -63,22 +63,22 @@ interface TagInterface extends JsonSerializable {
      * @param AnnotationInterface $annotation
      * @return static
      */
-    public function withAnnotation(AnnotationInterface $annotation): self;
+    public function withAnnotation(AnnotationInterface $annotation);
 
     /**
      * Returns a new instance with given tag name
      * @param string $name
-     * @return TagInterface
+     * @return static
      * @throws InvalidArgumentException on invalid name
      */
-    public function withName(string $name): self;
+    public function withName(string $name);
 
     /**
      * Returns a new Instance with given tag value
      * @param mixed $value
      * @return static
      */
-    public function withValue($value): self;
+    public function withValue($value);
 
     /**
      * Creates a new instance with given attribute
@@ -86,12 +86,12 @@ interface TagInterface extends JsonSerializable {
      * @return static
      * @throws InvalidArgumentException if invalid attribute
      */
-    public function withAttribute(string $attribute): self;
+    public function withAttribute(string $attribute);
 
     /**
      * Creates a new instance with given params
      * @param array $params
      * @return static
      */
-    public function withParams(array $params): self;
+    public function withParams(array $params);
 }
