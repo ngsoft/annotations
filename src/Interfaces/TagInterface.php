@@ -33,6 +33,12 @@ interface TagInterface extends JsonSerializable {
     public function getValue();
 
     /**
+     * Get value as an array
+     * @return array
+     */
+    public function getValues(): array;
+
+    /**
      * Get Attribute name
      * @return string
      */

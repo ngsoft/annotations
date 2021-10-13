@@ -41,6 +41,13 @@ class TagBasic implements TagInterface {
     }
 
     /** {@inheritdoc} */
+    public function getValues(): array {
+        $val = $this->getValue();
+        if (!is_array($val)) $val = [$val];
+        return $val;
+    }
+
+    /** {@inheritdoc} */
     public function getAttribute(): string {
         return $this->attribute;
     }
