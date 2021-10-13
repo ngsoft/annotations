@@ -15,7 +15,7 @@ use function mb_strpos;
 class ListProcessor extends Processor implements TagProcessorInterface {
 
     const DETECT_LIST_REGEX = '/^[\(](.*?)[\)]/';
-    const DETECT_KEY_VALUE_PAIR = '/^\{(.*?)\}$/';
+    const DETECT_KEY_VALUE_PAIR = '/^\{(.*?)\}/';
 
     /** @var AnnotationFactoryInterface */
     protected $annotationFactory;
@@ -39,7 +39,7 @@ class ListProcessor extends Processor implements TagProcessorInterface {
      * @return bool
      */
     protected function isList(string $input): bool {
-        return mb_strpos($input, '(') === 0 and mb_strpos($input, ')') !== false;
+        return $input[0] === '(' and mb_strpos($input, ')') !== false;
     }
 
     /**
@@ -98,6 +98,8 @@ class ListProcessor extends Processor implements TagProcessorInterface {
             list(, $args) = $matches;
             $args = trim($args);
             if ($args[0] !== '{' and $args[-1] !== '}') $args = sprintf('{%s}', $args);
+            // list type (value1= "my value 1", value2= "my 2nd value")
+            // or ({value1= "my value 1", value2= "my 2nd value"})
 
             if (
                     mb_strpos($args, '{') === 0
@@ -107,6 +109,8 @@ class ListProcessor extends Processor implements TagProcessorInterface {
             ) {
                 return $this->parseKeyPairList($args);
             }
+
+            // kist type (value1, value2)
             $args = trim($args, '{}');
             $args = preg_split('/\h*,\h*/', $args);
             foreach ($args as $value) {
