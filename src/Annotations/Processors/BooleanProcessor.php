@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Processors;
 
 use NGSOFT\{
-    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\Processor, Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface,
-    Interfaces\TagInterface, Interfaces\TagProcessorInterface
+    Annotations\Tags\TagBoolean, Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\Processor, Interfaces\AnnotationInterface,
+    Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 
 /**
@@ -26,7 +26,7 @@ class BooleanProcessor extends Processor implements TagProcessorInterface {
 
         $tag = $annotation->getTag();
 
-        if ($tag instanceof \NGSOFT\Annotations\Tags\TagBoolean) {
+        if ($tag instanceof TagBoolean) {
             $val = $tag->getValue();
             if (is_string($val)) {
                 if (in_array($tag->getValue(), ['false', 'off'])) return $tag->withValue(false);
