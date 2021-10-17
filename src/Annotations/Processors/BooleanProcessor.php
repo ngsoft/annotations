@@ -26,6 +26,16 @@ class BooleanProcessor extends Processor implements TagProcessorInterface {
 
         $tag = $annotation->getTag();
 
+        if ($tag instanceof \NGSOFT\Annotations\Tags\TagBoolean) {
+            $val = $tag->getValue();
+            if (is_string($val)) {
+                if (in_array($tag->getValue(), ['false', 'off'])) return $tag->withValue(false);
+                else return $tag->withValue(true);
+            }
+        }
+
+
+
         if (
                 !$this->isIgnored($tag)
                 and is_string($tag->getValue())

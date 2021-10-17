@@ -6,9 +6,9 @@ namespace NGSOFT\Annotations\Processors;
 
 use JsonException;
 use NGSOFT\{
-    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\AnnotationFactory, Annotations\Utils\ClassNameResolver, Annotations\Utils\Processor,
-    Exceptions\AnnotationException, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface, Interfaces\TagInterface,
-    Interfaces\TagProcessorInterface
+    Annotations\Tags\TagBoolean, Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\AnnotationFactory, Annotations\Utils\ClassNameResolver,
+    Annotations\Utils\Processor, Exceptions\AnnotationException, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface,
+    Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 use function mb_strpos;
 
@@ -31,6 +31,7 @@ class ListProcessor extends Processor implements TagProcessorInterface {
         $this->annotationFactory = $annotationFactory ?? new AnnotationFactory();
         $this->classNameResolver = new ClassNameResolver();
         $this->addIgnoreTagClass(TagProperty::class);
+        $this->addIgnoreTagClass(TagBoolean::class);
     }
 
     /**
@@ -39,7 +40,7 @@ class ListProcessor extends Processor implements TagProcessorInterface {
      * @return bool
      */
     protected function isList(string $input): bool {
-        return $input[0] === '(' and mb_strpos($input, ')') !== false;
+        return !empty($input) && $input[0] === '(' and mb_strpos($input, ')') !== false;
     }
 
     /**

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Processors;
 
 use NGSOFT\{
-    Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\Processor, Interfaces\AnnotationInterface,
+    Annotations\Tags\TagBoolean, Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\Processor, Interfaces\AnnotationInterface,
     Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 use function mb_strpos;
@@ -15,7 +15,8 @@ class NumberProcessor extends Processor implements TagProcessorInterface {
     public function __construct() {
         $this
                 ->addIgnoreTagClass(TagProperty::class)
-                ->addIgnoreTagClass(TagList::class);
+                ->addIgnoreTagClass(TagList::class)
+                ->addIgnoreTagClass(TagBoolean::class);
     }
 
     public function process(AnnotationInterface $annotation, TagHandlerInterface $handler): TagInterface {

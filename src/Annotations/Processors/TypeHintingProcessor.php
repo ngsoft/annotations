@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace NGSOFT\Annotations\Processors;
 
 use NGSOFT\{
-    Annotations\Tags\TagProperty, Annotations\Utils\ClassNameResolver, Annotations\Utils\Processor, Exceptions\AnnotationException, Interfaces\AnnotationInterface,
-    Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
+    Annotations\Tags\TagBoolean, Annotations\Tags\TagProperty, Annotations\Utils\ClassNameResolver, Annotations\Utils\Processor, Exceptions\AnnotationException,
+    Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface, Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 use function mb_strpos,
              mb_substr;
@@ -21,6 +21,7 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
 
     public function __construct() {
         $this->classNameResolver = new ClassNameResolver();
+        $this->addIgnoreTagClass(TagBoolean::class);
     }
 
     /**
