@@ -98,7 +98,7 @@ class ListProcessor extends Processor implements TagProcessorInterface {
 
             list(, $args) = $matches;
             $args = trim($args);
-            if ($args[0] !== '{' and $args[-1] !== '}') $args = sprintf('{%s}', $args);
+            if (empty($args) or ($args[0] !== '{' and $args[-1] !== '}')) $args = sprintf('{%s}', $args);
             // list type (value1= "my value 1", value2= "my 2nd value")
             // or ({value1= "my value 1", value2= "my 2nd value"})
 
@@ -161,25 +161,10 @@ class ListProcessor extends Processor implements TagProcessorInterface {
                                 ->withName($tag->getName())
                                 ->withValue($output);
             }
-            //can be a custom class extending TagList so returns a resolved result
+            //can be a custom class extending TagList so handle error
             if ($tag instanceof TagList) {
-                //resolve class name
-                if (
-                        is_string($tag->getValue())
-                        and $className = $this->classNameResolver->resolve($annotation, $tag->getValue())
-                ) {
-
-                    return $tag->withValue($className);
-                }
-                // resolve others
-                $tagToResolve = $this->annotationFactory->createTag($tag->getName(), $input); //creates basic tag so it isn't ignored by the other processors
-                $resolvedTag = $handler->handle($annotation->withTag($tagToResolve)); // use other processors
-
-                if ($input === $resolvedTag->getValue()) {
-                    //no change -> handle error
-                    if (!$this->getSilentMode()) throw new AnnotationException($annotation);
-                    else return $tag->withValue(null);
-                } else return $tag->withValue($resolvedTag->getValue());
+                if (!$this->getSilentMode()) throw new AnnotationException($annotation);
+                else return $tag->withValue([]);
             }
         }
         return $handler->handle($annotation);
