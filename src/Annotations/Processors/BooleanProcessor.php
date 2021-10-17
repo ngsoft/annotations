@@ -12,6 +12,7 @@ use NGSOFT\{
 /**
  * Handles single tags that don't have value (flags) or
  * have values like true, on, false, off
+ * or Tags extending TagBoolean
  */
 class BooleanProcessor extends Processor implements TagProcessorInterface {
 
@@ -29,7 +30,7 @@ class BooleanProcessor extends Processor implements TagProcessorInterface {
         if ($tag instanceof TagBoolean) {
             $val = $tag->getValue();
             if (is_string($val)) {
-                if (in_array($tag->getValue(), ['false', 'off'])) return $tag->withValue(false);
+                if (in_array($val, ['false', 'off'])) return $tag->withValue(false);
                 else return $tag->withValue(true);
             }
         }
