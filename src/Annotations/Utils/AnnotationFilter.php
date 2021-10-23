@@ -17,8 +17,14 @@ class AnnotationFilter implements AnnotationFilterInterface, IteratorAggregate {
     /** @var AnnotationFilterInterface[] */
     protected $filters = [];
 
-    public function __construct() {
-        $this->filters[] = new NullFilter();
+    public function __construct(array $filters = []) {
+
+        foreach ($filters as $filter) {
+            if (!($filter instanceof AnnotationFilterInterface)) {
+                throw new InvalidArgumentException('Invalid filter, not an instance of ' . AnnotationFilterInterface::class);
+            }
+            $this->filters[] = $filter;
+        }
     }
 
     /** {@inheritdoc} */
@@ -26,6 +32,7 @@ class AnnotationFilter implements AnnotationFilterInterface, IteratorAggregate {
         foreach ($this->filters as $filter) {
             if (!$filter->filter($annotation)) return false;
         }
+        // also if no filters
         return true;
     }
 
