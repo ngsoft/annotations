@@ -6,7 +6,8 @@ namespace NGSOFT\Annotations;
 
 use InvalidArgumentException;
 use NGSOFT\{
-    Annotations\Utils\AnnotationFactory, Annotations\Utils\Dispatcher, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface
+    Annotations\Utils\AnnotationFactory, Annotations\Utils\AnnotationFilter, Annotations\Utils\Dispatcher, Interfaces\AnnotationFactoryInterface,
+    Interfaces\AnnotationInterface
 };
 use Psr\Cache\{
     CacheItemInterface, CacheItemPoolInterface
@@ -53,6 +54,9 @@ class AnnotationParser {
     /** @var AnnotationFactoryInterface */
     protected $annotationFactory;
 
+    /** @var AnnotationFilter */
+    protected $annotationFilter;
+
     /** @var Dispatcher */
     protected $processorDispatcher;
 
@@ -67,11 +71,13 @@ class AnnotationParser {
 
     public function __construct(
             Dispatcher $processorDispatcher = null,
-            AnnotationFactoryInterface $annotationFactory = null
+            AnnotationFactoryInterface $annotationFactory = null,
+            AnnotationFilter $annotationFilter = null
     ) {
         $this->ignoreTags = self::DEFAULT_IGNORE_TAGS;
         $this->annotationFactory = $annotationFactory ?? new AnnotationFactory();
         $this->processorDispatcher = $processorDispatcher ?? new Dispatcher();
+        $this->annotationFilter = $annotationFilter ?? new AnnotationFilter();
     }
 
     /**
@@ -297,7 +303,8 @@ class AnnotationParser {
     protected function process(array $annotations): array {
         $result = [];
         foreach ($annotations as $annotation) {
-            $result[] = $this->processorDispatcher->handle($annotation);
+            $beforeFilter = $this->processorDispatcher->handle($annotation);
+            if ($this->annotationFilter->filter($beforeFilter)) $result[] = $beforeFilter;
         }
         return $result;
     }

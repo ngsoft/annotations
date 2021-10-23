@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace NGSOFT\Annotations\Utils;
 
+use IteratorAggregate;
 use NGSOFT\{
     Annotations\Filters\NullFilter, Interfaces\AnnotationFilterInterface, Interfaces\AnnotationInterface
 };
@@ -11,7 +12,7 @@ use NGSOFT\{
 /**
  * Filter Stack
  */
-class AnnotationFilter implements AnnotationFilterInterface, \IteratorAggregate {
+class AnnotationFilter implements AnnotationFilterInterface, IteratorAggregate {
 
     /** @var AnnotationFilterInterface[] */
     protected $filters = [];
@@ -40,7 +41,7 @@ class AnnotationFilter implements AnnotationFilterInterface, \IteratorAggregate 
     }
 
     /**
-     * @return Generator<string, AnnotationFilterInterface>
+     * @return \Generator<string, AnnotationFilterInterface>
      */
     public function getIterator() {
         foreach ($this->filters as $filter) {
