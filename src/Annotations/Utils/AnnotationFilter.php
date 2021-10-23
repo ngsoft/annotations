@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace NGSOFT\Annotations\Utils;
 
-use IteratorAggregate;
-use NGSOFT\{
-    Annotations\Filters\NullFilter, Interfaces\AnnotationFilterInterface, Interfaces\AnnotationInterface
+use InvalidArgumentException,
+    IteratorAggregate;
+use NGSOFT\Interfaces\{
+    AnnotationFilterInterface, AnnotationInterface
 };
 
 /**
