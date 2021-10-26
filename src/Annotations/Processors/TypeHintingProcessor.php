@@ -25,6 +25,18 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
     }
 
     /**
+     * Checks if hint begins with '?'
+     *
+     * @param string $hint
+     * @return bool
+     */
+    public function isNullable(string $hint): bool {
+        $nullable = false;
+        if (mb_strlen($hint) > 0 and $hint[0] == '?') $nullable = true;
+        return $nullable;
+    }
+
+    /**
      * Resolve Hint (?ClassName|callable|null)
      * @param AnnotationInterface $annotation
      * @param string $hint
@@ -67,8 +79,10 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
         if (empty($args)) return $result;
         $args = preg_split('/\h*,\h*/', $args);
         foreach ($args as $input) {
-
             $input = trim($input);
+
+            $nullable = $this->isNullable($input);
+
             //check if hint and var
             if (preg_match('/^\??(?:(\S+)\h+)?\.*\$(\w+)/', $input, $matches)) {
                 list(, $hint, $name) = $matches;
@@ -78,8 +92,12 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
                 }
                 //handle hint
                 if ($types = $this->resolveHint($annotation, $hint)) {
-                    if (count($types) == 1) $types = $types[0];
+                    //if (count($types) == 1) $types = $types[0];
                     $result[$name] = $types;
+                    if (
+                            $nullable and
+                            !in_array('null', $result[$name])
+                    ) $result[$name][] = 'null';
                 } else return null;
             }
         }
@@ -102,12 +120,19 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
 
             $input = $tag->getValue();
 
+            $nullable = $this->isNullable($input);
+
             // @method values|value2 functionName(?attr $varname)
             if (preg_match('/^\??(\S+)\h+(\w+)\h*\((.*)\)/', $input, $matches) > 0) {
-
                 list(, $hint, $method, $args) = $matches;
                 //handle hint
                 if ($types = $this->resolveHint($annotation, $hint)) {
+
+                    if (
+                            $nullable and
+                            !in_array('null', $result[$name])
+                    ) $types[] = 'null';
+
                     $tag = $tag->withAttribute($method)->withValue($types);
                     //handle args
                     if (($arguments = $this->resolveArguments($annotation, $args)) !== null) {
@@ -124,7 +149,11 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
                 else list(, $hint) = $matches;
 
                 if ($result = $this->resolveHint($annotation, $hint)) {
-                    if (count($result) == 1) $result = $result[0];
+                    // if (count($result) == 1) $result = $result[0];
+                    if (
+                            $nullable and
+                            !in_array('null', $result)
+                    ) $result[] = 'null';
                     return $tag->withAttribute($name)->withValue($result);
                 } elseif (!$this->getSilentMode()) throw new AnnotationException($annotation);
                 //empty array or null

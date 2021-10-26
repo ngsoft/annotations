@@ -6,8 +6,7 @@ namespace NGSOFT\Annotations;
 
 use InvalidArgumentException;
 use NGSOFT\{
-    Annotations\Utils\AnnotationFactory, Annotations\Utils\AnnotationFilter, Annotations\Utils\Dispatcher, Interfaces\AnnotationFactoryInterface,
-    Interfaces\AnnotationInterface
+    Annotations\Utils\AnnotationFactory, Annotations\Utils\AnnotationFilter, Annotations\Utils\Dispatcher, Interfaces\AnnotationInterface
 };
 use Psr\Cache\{
     CacheItemInterface, CacheItemPoolInterface
@@ -51,7 +50,7 @@ class AnnotationParser {
      */
     const CACHE_KEY_PREFIX = 'NGSOFT_ANNOTATIONS_';
 
-    /** @var AnnotationFactoryInterface */
+    /** @var AnnotationFactory */
     protected $annotationFactory;
 
     /** @var AnnotationFilter */
@@ -71,7 +70,7 @@ class AnnotationParser {
 
     public function __construct(
             Dispatcher $processorDispatcher = null,
-            AnnotationFactoryInterface $annotationFactory = null,
+            AnnotationFactory $annotationFactory = null,
             AnnotationFilter $annotationFilter = null
     ) {
         $this->ignoreTags = self::DEFAULT_IGNORE_TAGS;

@@ -7,8 +7,8 @@ namespace NGSOFT\Annotations\Processors;
 use JsonException;
 use NGSOFT\{
     Annotations\Tags\TagBoolean, Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\AnnotationFactory, Annotations\Utils\ClassNameResolver,
-    Annotations\Utils\Processor, Exceptions\AnnotationException, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface,
-    Interfaces\TagInterface, Interfaces\TagProcessorInterface
+    Annotations\Utils\Processor, Exceptions\AnnotationException, Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface, Interfaces\TagInterface,
+    Interfaces\TagProcessorInterface
 };
 use function mb_strpos;
 
@@ -17,15 +17,15 @@ class ListProcessor extends Processor implements TagProcessorInterface {
     const DETECT_LIST_REGEX = '/^[\(](.*?)[\)]/';
     const DETECT_KEY_VALUE_PAIR = '/^\{(.*?)\}/';
 
-    /** @var AnnotationFactoryInterface */
+    /** @var AnnotationFactory */
     protected $annotationFactory;
 
     /** @var ClassNameResolver */
     protected $classNameResolver;
 
-    /** @param AnnotationFactoryInterface|null $annotationFactory */
+    /** @param AnnotationFactory|null $annotationFactory */
     public function __construct(
-            ?AnnotationFactoryInterface $annotationFactory = null
+            ?AnnotationFactory $annotationFactory = null
     ) {
 
         $this->annotationFactory = $annotationFactory ?? new AnnotationFactory();
@@ -63,7 +63,7 @@ class ListProcessor extends Processor implements TagProcessorInterface {
     }
 
     /**
-     * Parse Key PAir List {a=50, b="value", custom_arg = true}
+     * Parse Key Pair List {a=50, b="value", custom_arg = true}
      * @param string $input
      * @return array
      */

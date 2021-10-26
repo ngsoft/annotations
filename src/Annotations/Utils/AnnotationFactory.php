@@ -7,13 +7,13 @@ namespace NGSOFT\Annotations\Utils;
 use InvalidArgumentException;
 use NGSOFT\{
     Annotations\Tags\TagBasic, Annotations\Tags\TagProperty, Annotations\Types\AnnotationBasic, Annotations\Types\ClassAnnotation, Annotations\Types\MethodAnnotation,
-    Annotations\Types\PropertyAnnotation, Interfaces\AnnotationFactoryInterface, Interfaces\AnnotationInterface, Interfaces\TagInterface
+    Annotations\Types\PropertyAnnotation, Interfaces\AnnotationInterface, Interfaces\TagInterface
 };
 use ReflectionClass,
     ReflectionMethod,
     ReflectionProperty;
 
-class AnnotationFactory implements AnnotationFactoryInterface {
+class AnnotationFactory {
 
     /** @var array<string,string> */
     protected $annotationClasses = [
