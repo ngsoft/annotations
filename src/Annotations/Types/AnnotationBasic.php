@@ -116,16 +116,14 @@ class AnnotationBasic implements AnnotationInterface {
     /** {@inheritdoc} */
     public function withTag(TagInterface $tag): AnnotationInterface {
         $clone = clone $this;
-        $clone->tag = $tag;
-        return $clone;
+        return $clone->setTag($tag);
     }
 
     /** {@inheritdoc} */
     public function withTagValue($value): AnnotationInterface {
         $clone = clone $this;
         $tag = $clone->tag->withValue($value);
-        $clone->tag = $tag;
-        return $clone;
+        return $clone->setTag($tag);
     }
 
     ////////////////////////////   Setters   ////////////////////////////
