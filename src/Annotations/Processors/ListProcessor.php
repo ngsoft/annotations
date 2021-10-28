@@ -16,7 +16,6 @@ class ListProcessor extends Processor implements TagProcessorInterface {
 
     const DETECT_LIST_REGEX = '/^[\(](.*?)[\)]/';
     const DETECT_NAMED_LIST_REGEX = '/\w+\h*=\h*/';
-    const DETECT_KEY_VALUE_PAIR = '/^\{(.*?)\}/';
 
     /** @var AnnotationFactory */
     protected $annotationFactory;
@@ -67,69 +66,50 @@ class ListProcessor extends Processor implements TagProcessorInterface {
     }
 
     /**
-     * Parse Key Pair List {a=50, b="value", custom_arg = true}
-     * @param string $input
-     * @return array
-     */
-    protected function parseKeyPairList(string $input): array {
-
-        $result = [];
-
-        if (preg_match(self::DETECT_KEY_VALUE_PAIR, $input, $matches) > 0) {
-            list(, $args) = $matches;
-            $args = preg_split('/\h*,\h*/', $args);
-            foreach ($args as $argInput) {
-
-                if (preg_match('/\h*(\w+)\h*=(.*)/', $argInput, $matchesArg) > 0) {
-                    list(, $key, $value) = $matchesArg;
-                    $output = $this->getRealValue($value);
-                    if ($output === null) continue;
-                    $result[$key] = $output;
-                }
-            }
-        }
-        return $result;
-    }
-
-    /**
      * Detects if named list
      *
      * @param mixed $input
-     * @return type
+     * @return bool
      */
-    protected function isNamedList($input) {
+    protected function isNamedList($input): bool {
         return
                 is_string($input) and
                 preg_match(self::DETECT_NAMED_LIST_REGEX, $input) > 0;
     }
 
     /**
-     * Capture the list
+     * Parse the list (item1, item2)
+     *
      * @param string $input
      * @return array
      */
     protected function parseList(string $input): array {
         $result = [];
         if (preg_match(self::DETECT_LIST_REGEX, $input, $matches) > 0) {
-
-            list(, $args) = $matches;
+            $args = $trim(matches[1]);
             $args = trim($args);
-            if (empty($args) or ($args[0] !== '{' and $args[-1] !== '}')) $args = sprintf('{%s}', $args);
-            // list type (value1= "my value 1", value2= "my 2nd value")
-            // or ({value1= "my value 1", value2= "my 2nd value"})
+            $args = trim($args, '[]{}');
+            $args = preg_split('/\h*,\h*/', $args);
 
-            if (
-                    mb_strpos($args, '{') === 0
-                    and ($pos = mb_strpos($args, '}')) !== false
-                    and ($poseq = mb_strpos($args, '=')) !== false
-                    and $pos > $poseq
-            ) {
-                return $this->parseKeyPairList($args);
+            foreach ($args as $argInput) {
+                // Named List
+                if (preg_match('/\h*(\w+)\h*=(.*)/', $argInput, $matchesArg) > 0) {
+                    list(, $key, $value) = $matchesArg;
+                    if (is_string($key = $this->getRealValue($key))) {
+                        $output = $this->getRealValue($value);
+                        if ($output === null) continue;
+                        $result[$key] = $output;
+                    }
+                    continue;
+                }
+                // not named
+
+                if (is_string($output = $this->getRealValue($argInput))) {
+                    $result[] = $output;
+                }
             }
 
-            // kist type (value1, value2)
-            $args = trim($args, '{}');
-            $args = preg_split('/\h*,\h*/', $args);
+
             foreach ($args as $value) {
                 $output = $this->getRealValue($value);
                 if ($output === null) continue;
@@ -147,8 +127,10 @@ class ListProcessor extends Processor implements TagProcessorInterface {
         if ($this->isIgnored($tag)) return $handler->handle($annotation);
         $input = $tag->getValue();
 
+        $isNamed = $this->isNamedList($input);
+
         /** @var string $tagclass */
-        $tagClass = $this->isNamedList($input) ? NamedTagList::class : TagList::class;
+        $tagClass = $isNamed ? NamedTagList::class : TagList::class;
 
         if ($tag instanceof TagList) {
             if ($input) return $tag;
@@ -158,8 +140,6 @@ class ListProcessor extends Processor implements TagProcessorInterface {
 
 
         if (is_string($input)) {
-
-
 
             if ($this->isList($input)) {
 
@@ -176,7 +156,6 @@ class ListProcessor extends Processor implements TagProcessorInterface {
                 }
                 if ($tag instanceof TagList) return $tag->withValue($output);
 
-                if (is_string(key($output))) $tagClass = NamedTagList::class;
                 return (new $tagClass)
                                 ->withName($tag->getName())
                                 ->withValue($output);
