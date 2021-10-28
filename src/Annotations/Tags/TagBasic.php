@@ -179,18 +179,7 @@ class TagBasic implements TagInterface {
         return $data;
     }
 
-    ////////////////////////////   CacheAble   ////////////////////////////
-
-    /** {@inheritdoc} */
-    public static function __set_state($array) {
-        $i = new static();
-        $i->__unserialize($array);
-        return $i
-                        ->setName($array['name'] ?? '')
-                        ->setValue($array['value'] ?? null)
-                        ->setAttribute($array['attribute'] ?? '')
-                        ->setParams($array['params'] ?? []);
-    }
+    ////////////////////////////   Cache   ////////////////////////////
 
     /** {@inheritdoc} */
     public function jsonSerialize() {

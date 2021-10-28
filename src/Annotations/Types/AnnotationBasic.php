@@ -128,6 +128,35 @@ class AnnotationBasic implements AnnotationInterface {
         return $clone;
     }
 
+    ////////////////////////////   Setters   ////////////////////////////
+
+
+
+    protected function setTag(TagInterface $tag) {
+        $this->tag = $tag;
+        return $this;
+    }
+
+    protected function setClassName(string $className) {
+        $this->className = $className;
+        return $this;
+    }
+
+    protected function setFileName(string $fileName) {
+        $this->fileName = $fileName;
+        return $this;
+    }
+
+    protected function setName(string $name) {
+        $this->name = $name;
+        return $this;
+    }
+
+    protected function setType(string $type) {
+        $this->type = $type;
+        return $this;
+    }
+
     ////////////////////////////   Dump Friendly   ////////////////////////////
 
     /** {@inheritdoc} */
@@ -141,26 +170,33 @@ class AnnotationBasic implements AnnotationInterface {
     public function jsonSerialize() {
 
         return [
-            'tag' => $this->tag,
-            'type' => $this->type,
-            'class' => $this->className,
-            'name' => $this->name,
-            'filename' => $this->fileName,
-            'reflector' => get_class($this->reflector)
+            'tag' => $this->getTag(),
+            'type' => $this->getType(),
+            'className' => $this->getClassName(),
+            'name' => $this->getName(),
+            'fileName' => $this->getFileName(),
+            'reflector' => get_class($this->getReflector())
         ];
     }
 
+    /** {@inheritdoc} */
     public function __serialize() {
         return $this->jsonSerialize();
     }
 
+    /** {@inheritdoc} */
     public function __unserialize(array $data) {
-        $this->tag = $data['tag'];
-        $this->type = $data['type'];
-        $this->className = $data['class'];
-        $this->name = $data['name'];
-        $this->fileName = $data['filename'];
+
+
+        $this
+                ->setTag($data['tag'])
+                ->setType($data['type'])
+                ->setClassName($data['className'])
+                ->setName($data['name'])
+                ->setFileName($data['fileName']);
+
         $reflector = $data['reflector'];
+
         if ($reflector == ReflectionClass::class) $this->reflector = new ReflectionClass($this->className);
         else $this->reflector = new $reflector($this->className, $this->name);
         $this->tag = $this->tag->withAnnotation($this);
