@@ -6,9 +6,9 @@ namespace NGSOFT\Annotations\Processors;
 
 use JsonException;
 use NGSOFT\{
-    Annotations\Tags\TagBoolean, Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\AnnotationFactory, Annotations\Utils\ClassNameResolver,
-    Annotations\Utils\Processor, Exceptions\AnnotationException, Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface, Interfaces\TagInterface,
-    Interfaces\TagProcessorInterface
+    Annotations\Tags\NamedTagList, Annotations\Tags\TagBoolean, Annotations\Tags\TagList, Annotations\Tags\TagProperty, Annotations\Utils\AnnotationFactory,
+    Annotations\Utils\ClassNameResolver, Annotations\Utils\Processor, Exceptions\AnnotationException, Interfaces\AnnotationInterface, Interfaces\TagHandlerInterface,
+    Interfaces\TagInterface, Interfaces\TagProcessorInterface
 };
 use function mb_strpos;
 
@@ -157,6 +157,8 @@ class ListProcessor extends Processor implements TagProcessorInterface {
                     }
                 }
                 if ($tag instanceof TagList) return $tag->withValue($output);
+
+                if (is_string(key($output))) $tagClass = NamedTagList::class;
                 return (new $tagClass)
                                 ->withName($tag->getName())
                                 ->withValue($output);
