@@ -30,6 +30,8 @@ class TagBasic implements TagInterface {
     /** @var AnnotationInterface */
     protected $annotation;
 
+    ////////////////////////////   Getters   ////////////////////////////
+
     /** {@inheritdoc} */
     public function getName(): string {
         return $this->name;
@@ -43,7 +45,7 @@ class TagBasic implements TagInterface {
     /** {@inheritdoc} */
     public function getValues(): array {
         $val = $this->getValue();
-        if (!is_array($val)) $val = [$val];
+        if (!is_array($val)) $val = $val === null ? [] : [$val];
         return $val;
     }
 
@@ -67,48 +69,105 @@ class TagBasic implements TagInterface {
         return $this->annotation;
     }
 
+    ////////////////////////////   Configurator   ////////////////////////////
+
     /** {@inheritdoc} */
     public function withAnnotation(AnnotationInterface $annotation) {
         $clone = clone $this;
-        $clone->annotation = $annotation;
-        return $clone;
+        return $clone->setAnnotation($annotation);
     }
 
     /** {@inheritdoc} */
     public function withName(string $name) {
-        if (!preg_match(self::VALID_TAG_NAME_REGEX, $name)) {
-            throw new InvalidArgumentException(sprintf('Invalid tag name "%s".', $name));
-        }
+
         $clone = clone $this;
-        $clone->name = $name;
-        return $clone;
+        return $clone->setName($name);
     }
 
     /** {@inheritdoc} */
     public function withValue($value) {
         $clone = clone $this;
-        $clone->value = $value;
-        return $clone;
+        return $clone->setValue($value);
     }
 
     /** {@inheritdoc} */
     public function withAttribute(string $attribute) {
+
+        $clone = clone $this;
+        return $clone->setAttribute($attribute);
+    }
+
+    /** {@inheritdoc} */
+    public function withParams(array $params) {
+        $clone = clone $this;
+        return $clone->setParams($params);
+    }
+
+    ////////////////////////////   Setters   ////////////////////////////
+
+    /**
+     * Set Tag Name
+     *
+     * @param string $name
+     * @return static
+     */
+    protected function setName(string $name) {
+        if (!preg_match(self::VALID_TAG_NAME_REGEX, $name)) {
+            throw new InvalidArgumentException(sprintf('Invalid tag name "%s".', $name));
+        }
+        $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * Set Tag Value
+     *
+     * @param mixed $value
+     * @return static
+     */
+    protected function setValue($value) {
+        $this->value = $value;
+        return $this;
+    }
+
+    /**
+     * Set Tag attribute name
+     *
+     * @param string $attribute
+     * @return static
+     * @throws InvalidArgumentException
+     */
+    protected function setAttribute(string $attribute) {
         if (
                 !preg_match(self::VALID_ATTRIBUTE_REGEX, $attribute)
         ) {
             throw new InvalidArgumentException(sprintf('Attribute "%s" invalid.', $attribute));
         }
 
-        $clone = clone $this;
-        $clone->attribute = $attribute;
-        return $clone;
+        $this->attribute = $attribute;
+        return $this;
     }
 
-    /** {@inheritdoc} */
-    public function withParams(array $params) {
-        $clone = clone $this;
-        $clone->params = $params;
-        return $clone;
+    /**
+     * Set attribute params
+     *
+     * @param array $params
+     * @return static
+     */
+    protected function setParams(array $params) {
+        $this->params = $params;
+        return $this;
+    }
+
+    /**
+     * Set Annotation
+     *
+     * @param AnnotationInterface $annotation
+     * @return static
+     */
+    protected function setAnnotation(AnnotationInterface $annotation) {
+        $this->annotation = $annotation;
+        return $this;
     }
 
     ////////////////////////////   Dump Friendly   ////////////////////////////
@@ -125,11 +184,12 @@ class TagBasic implements TagInterface {
     /** {@inheritdoc} */
     public static function __set_state($array) {
         $i = new static();
-        $i->name = $array['name'] ?? '';
-        $i->value = $array['value'] ?? null;
-        $i->attribute = $array['attribute'] ?? '';
-        $i->params = $array['params'] ?? [];
-        return $i;
+        $i->__unserialize($array);
+        return $i
+                        ->setName($array['name'] ?? '')
+                        ->setValue($array['value'] ?? null)
+                        ->setAttribute($array['attribute'] ?? '')
+                        ->setParams($array['params'] ?? []);
     }
 
     /** {@inheritdoc} */
@@ -149,10 +209,12 @@ class TagBasic implements TagInterface {
 
     /** {@inheritdoc} */
     public function __unserialize(array $data) {
-        $this->name = $data['name'] ?? '';
-        $this->value = $data['value'] ?? null;
-        $this->attribute = $data['attribute'] ?? '';
-        $this->params = $data['params'] ?? [];
+
+        $this
+                ->setName($data['name'] ?? '')
+                ->setValue($data['value'] ?? null)
+                ->setAttribute($data['attribute'] ?? '')
+                ->setParams($data['params'] ?? []);
     }
 
 }
