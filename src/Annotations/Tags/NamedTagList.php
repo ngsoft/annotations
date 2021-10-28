@@ -25,7 +25,10 @@ class NamedTagList extends TagList {
         ) {
             foreach (array_keys($value) as $key) {
                 if (!in_array($key, $valid)) {
-                    throw new AnnotationException($this->getAnnotation());
+                    throw new AnnotationException(
+                                    $this->getAnnotation(),
+                                    sprintf('Invalid annotation value for "@%s" in file "%s"', $this->getName(), $this->getAnnotation()->getFileName())
+                    );
                 }
                 if (property_exists($this, $key)) {
                     $this->{$key} = $value[$key];
