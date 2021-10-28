@@ -15,6 +15,7 @@ use function mb_strpos;
 class ListProcessor extends Processor implements TagProcessorInterface {
 
     const DETECT_LIST_REGEX = '/^[\(](.*?)[\)]/';
+    const DETECT_NAMED_LIST_REGEX = '/\w+\h*=\h*/';
     const DETECT_KEY_VALUE_PAIR = '/^\{(.*?)\}/';
 
     /** @var AnnotationFactory */
@@ -40,7 +41,10 @@ class ListProcessor extends Processor implements TagProcessorInterface {
      * @return bool
      */
     protected function isList(string $input): bool {
-        return !empty($input) && $input[0] === '(' and mb_strpos($input, ')') !== false;
+        return
+                !empty($input) and
+                $input[0] === '(' and
+                mb_strpos($input, ')') !== false;
     }
 
     /**
@@ -88,6 +92,18 @@ class ListProcessor extends Processor implements TagProcessorInterface {
     }
 
     /**
+     * Detects if named list
+     *
+     * @param mixed $input
+     * @return type
+     */
+    protected function isNamedList($input) {
+        return
+                is_string($input) and
+                preg_match(self::DETECT_NAMED_LIST_REGEX, $input) > 0;
+    }
+
+    /**
      * Capture the list
      * @param string $input
      * @return array
@@ -128,20 +144,22 @@ class ListProcessor extends Processor implements TagProcessorInterface {
     public function process(AnnotationInterface $annotation, TagHandlerInterface $handler): TagInterface {
         $tag = $annotation->getTag();
 
+        if ($this->isIgnored($tag)) return $handler->handle($annotation);
+        $input = $tag->getValue();
+
         /** @var string $tagclass */
-        $tagClass = TagList::class;
+        $tagClass = $this->isNamedList($input) ? NamedTagList::class : TagList::class;
 
         if ($tag instanceof TagList) {
-            if (is_array($tag->getValue())) return $tag;
+            if ($input) return $tag;
             $tagClass = get_class($tag); //TagList or extended
         }
 
 
-        if (
-                !$this->isIgnored($tag)
-                and is_string($tag->getValue())
-        ) {
-            $input = $tag->getValue();
+
+        if (is_string($input)) {
+
+
 
             if ($this->isList($input)) {
 

@@ -130,28 +130,55 @@ class AnnotationBasic implements AnnotationInterface {
 
     ////////////////////////////   Setters   ////////////////////////////
 
-
-
+    /**
+     * Set Tag
+     *
+     * @param TagInterface $tag
+     * @return static
+     */
     protected function setTag(TagInterface $tag) {
         $this->tag = $tag;
         return $this;
     }
 
+    /**
+     * Set Class Name
+     *
+     * @param string $className
+     * @return static
+     */
     protected function setClassName(string $className) {
         $this->className = $className;
         return $this;
     }
 
+    /**
+     * Set File Name
+     *
+     * @param string $fileName
+     * @return static
+     */
     protected function setFileName(string $fileName) {
         $this->fileName = $fileName;
         return $this;
     }
 
+    /**
+     *
+     *
+     * @param string $name
+     * @return static
+     */
     protected function setName(string $name) {
         $this->name = $name;
         return $this;
     }
 
+    /**
+     *
+     * @param string $type
+     * @return static
+     */
     protected function setType(string $type) {
         $this->type = $type;
         return $this;
