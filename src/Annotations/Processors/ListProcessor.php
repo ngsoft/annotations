@@ -86,8 +86,7 @@ class ListProcessor extends Processor implements TagProcessorInterface {
     protected function parseList(string $input): array {
         $result = [];
         if (preg_match(self::DETECT_LIST_REGEX, $input, $matches) > 0) {
-            $args = $trim(matches[1]);
-            $args = trim($args);
+            $args = trim($matches[1]);
             $args = trim($args, '[]{}');
             $args = preg_split('/\h*,\h*/', $args);
 

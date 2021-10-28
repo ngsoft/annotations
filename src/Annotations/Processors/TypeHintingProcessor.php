@@ -130,7 +130,7 @@ class TypeHintingProcessor extends Processor implements TagProcessorInterface {
 
                     if (
                             $nullable and
-                            !in_array('null', $result[$name])
+                            !in_array('null', $types)
                     ) $types[] = 'null';
 
                     $tag = $tag->withAttribute($method)->withValue($types);
