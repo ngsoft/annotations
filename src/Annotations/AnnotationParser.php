@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace NGSOFT\Annotations;
 
-use InvalidArgumentException;
+use Fig\Cache\Memory\MemoryPool,
+    InvalidArgumentException;
 use NGSOFT\{
     Annotations\Utils\AnnotationFactory, Annotations\Utils\AnnotationFilter, Annotations\Utils\Dispatcher, Interfaces\AnnotationInterface
 };
@@ -48,7 +49,7 @@ class AnnotationParser {
     /**
      * Prefix for cache key
      */
-    const CACHE_KEY_PREFIX = 'NGSOFT_ANNOTATIONS_';
+    const CACHE_KEY_PREFIX = 'NGSOFT_ANNOTATIONS';
 
     /** @var AnnotationFactory */
     protected $annotationFactory;
@@ -142,11 +143,9 @@ class AnnotationParser {
      * @suppress PhanTypeMismatchArgumentNullable
      */
     public function parseClass(ReflectionClass $reflector, bool $classParents = false, array $tags = []): array {
-        $cacheEnabled = false;
-        if ($item = $this->getCacheItem($reflector, $classParents, $tags)) {
-            if ($item->isHit()) return $item->get();
-            $cacheEnabled = true;
-        }
+        $item = $this->getCacheItem($reflector, $classParents, $tags);
+        if ($item->isHit()) return $item->get();
+
 
         $collection = [];
 
@@ -162,10 +161,7 @@ class AnnotationParser {
         }
         $result = $this->process($collection);
 
-        if ($cacheEnabled) {
-            $item->set($result);
-            $this->saveCacheItem($item);
-        }
+        $this->saveCacheItem($item->set($result));
         return $result;
     }
 
@@ -207,7 +203,7 @@ class AnnotationParser {
     /**
      * Get Extended Classes
      * @param ReflectionClass $reflector
-     * @return array
+     * @return ReflectionClass[]
      * @suppress PhanPossiblyInfiniteLoop
      */
     public function getClassParents(\ReflectionClass $reflector): array {
@@ -233,28 +229,44 @@ class AnnotationParser {
     }
 
     /**
+     * Get Cache Pool
+     * @return CacheItemPoolInterface
+     */
+    public function getCachePool(): CacheItemPoolInterface {
+        $this->cache = $this->cache ?? new MemoryPool();
+        return $this->cache;
+    }
+
+    /**
      * Get parsed annotations cached version
      * @param ReflectionClass $reflector
      * @param bool $classParents
      * @param string[] $tags Tags to search for
-     * @return CacheItemInterface|null
+     * @return CacheItemInterface
      */
-    protected function getCacheItem(ReflectionClass $reflector, bool $classParents, array $tags): ?CacheItemInterface {
-        if (!$this->cache instanceof CacheItemPoolInterface) return null;
+    protected function getCacheItem(ReflectionClass $reflector, bool $classParents, array $tags): CacheItemInterface {
+        // invalidates cace on new version or class changes (previous item will stay)
 
-        $key = self::CACHE_KEY_PREFIX . implode('', $tags);
+        $parts = [
+            self::CACHE_KEY_PREFIX,
+            self::VERSION,
+            implode('', $tags)
+        ];
+
         $classes = [$reflector];
         if ($classParents) $classes = $this->getClassParents($reflector);
 
         foreach ($classes as $classReflector) {
             $filename = $classReflector->getFileName();
             $fileinfo = new SplFileInfo($filename);
-            // invalidates using $fileinfo->getMTime(); if file has been modified
-            $key .= '_' . str_replace('\\', '_', $classReflector->getName()) . '_' . $fileinfo->getMTime();
+
+            $parts[] = $classReflector->getName();
+            $parts[] = $fileinfo->getMTime();
         }
         // key can be too long some times, encode it to 32 chars hexbit
-        $key = md5($key);
-        return $this->cache->getItem($key);
+        $key = md5(implode('|', $parts));
+
+        return $this->getCachePool()->getItem($key);
     }
 
     /**
@@ -263,8 +275,8 @@ class AnnotationParser {
      * @return bool
      */
     protected function saveCacheItem(CacheItemInterface $item): bool {
-        $item->expiresAfter($this->ttl);
-        return $this->cache->save($item);
+        if (is_int($this->ttl)) $item->expiresAfter($this->ttl);
+        return $this->getCachePool()->save($item);
     }
 
     /**

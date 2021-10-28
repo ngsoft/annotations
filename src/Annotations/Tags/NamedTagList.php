@@ -27,6 +27,9 @@ class NamedTagList extends TagList {
                 if (!in_array($key, $valid)) {
                     throw new AnnotationException($this->getAnnotation());
                 }
+                if (property_exists($this, $key)) {
+                    $this->{$key} = $value[$key];
+                }
             }
         }
         $this->value = $value;

@@ -17,7 +17,8 @@
     "require": {
         "php": ">=7.4",
         "ext-tokenizer": "*",
-        "symfony/polyfill-mbstring": "^1.20"
+        "symfony/polyfill-mbstring": "^1.20",
+        "fig/cache-util": "^1.0"
     },
     "config": {
         "sort-packages": true
