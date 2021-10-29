@@ -30,6 +30,7 @@ class NamedTagList extends TagList {
                                     sprintf('Invalid annotation value for "@%s" in file "%s"', $this->getName(), $this->getAnnotation()->getFileName())
                     );
                 }
+
                 if (property_exists($this, $key)) {
                     $this->{$key} = $value[$key];
                 }

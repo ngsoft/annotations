@@ -170,6 +170,13 @@ class TagBasic implements TagInterface {
         return $this;
     }
 
+    ////////////////////////////   Clone   ////////////////////////////
+
+    /** {@inheritdoc} */
+    public function __clone() {
+        if (!is_null($this->annotation)) $this->annotation = $this->annotation->withTag($this);
+    }
+
     ////////////////////////////   Dump Friendly   ////////////////////////////
 
     /** {@inheritdoc} */
