@@ -107,6 +107,52 @@ class AnnotationParser {
      * @return array<string,string[]>
      */
     public function parseAnnotation(string $docComment, array $tags = []): array {
+        $whitelist = !empty($tags);
+        $result = [];
+        $lines = explode("\n", $docComment);
+        foreach ($lines as $index => $line) {
+            $trim = trim($line);
+            $trim = trim($trim, '/* ');
+            $lines[$index] = $trim;
+        }
+        $comment = implode(' ', $lines) . '@';
+
+        $len = mb_strlen($comment);
+        $previous = $current = '';
+
+        $list = [];
+        for ($i = 0; $i < $len; $i++) {
+            $char = $comment[$i];
+            if ($char == '@') {
+                if (!empty($current)) $list[] = trim(preg_replace('/\h+/', ' ', $current));
+                $current = $char;
+                continue;
+            }
+            $char = str_replace(["\n", "\r"], ' ', $char);
+            if (!empty($current)) $current .= $char;
+        }
+        foreach ($list as $line) {
+            if (preg_match(self::TAG_MATCH_REGEX, $line, $matches) > 0) {
+                $tag = $matches[1];
+                if (!$whitelist and in_array($tag, $this->ignoreTags)) continue;
+                if ($whitelist and!in_array($tag, $tags)) continue;
+                $len = mb_strlen($tag) + 1;
+                $line = mb_substr($line, $len);
+                $line = trim($line);
+                $result[$tag] = $result[$tag] ?? [];
+                $result[$tag][] = $line;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Parse a doc block and returns parsed values
+     * @param string $docComment
+     * @param string[] $tags Tags to find (empty tags will returns all)
+     * @return array<string,string[]>
+     */
+    public function parseAnnotationOld(string $docComment, array $tags = []): array {
 
         $whitelist = !empty($tags);
 
@@ -114,7 +160,7 @@ class AnnotationParser {
         $lines = explode("\n", $docComment);
         foreach ($lines as $line) {
             $line = trim($line);
-            $line = trim($line, '/*');
+            $line = trim($line, '/* ');
             $pos = mb_strpos($line, '@');
             if ($pos !== false) {
                 //annotation there
